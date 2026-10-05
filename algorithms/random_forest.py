@@ -1,4 +1,8 @@
-"""Functions for the random forest algorithm"""
+"""Educational implementation of a random forest classifier."""
+
+from __future__ import annotations
+
+from typing import Any
 
 import numpy as np
 
@@ -6,11 +10,29 @@ from .decision_tree import decision_tree_classifier
 
 
 class random_forest_classifier:
+    """Combine randomized decision trees through majority voting."""
+
     def __init__(
-            self, ntree, split_criterion, majority_class_threshold,
-            minimum_size_for_split, minimum_split_quality_score,
-            maximum_depth, random_seed):
-        
+        self,
+        ntree: int,
+        split_criterion: str,
+        majority_class_threshold: float,
+        minimum_size_for_split: int,
+        minimum_split_quality_score: float,
+        maximum_depth: int | None,
+        random_seed: int,
+    ) -> None:
+        """Initialize a random forest classifier.
+
+        Args:
+            ntree: Number of decision trees to train.
+            split_criterion: Tree split criterion, either ``information_gain`` or ``gini``.
+            majority_class_threshold: Purity threshold for a majority-class leaf.
+            minimum_size_for_split: Minimum number of instances required to split.
+            minimum_split_quality_score: Minimum quality required for a split.
+            maximum_depth: Maximum depth of each tree, or ``None`` for no limit.
+            random_seed: Base seed used to make bootstrap samples reproducible.
+        """
         self.ntree = ntree
         self.split_criterion = split_criterion
         self.majority_class_threshold = majority_class_threshold
@@ -18,97 +40,93 @@ class random_forest_classifier:
         self.minimum_split_quality_score = minimum_split_quality_score
         self.maximum_depth = maximum_depth
         self.random_seed = random_seed
+        self.random_forest: list[decision_tree_classifier] = []
 
-    def get_bootstrap_dataset(self, X, y, random_seed):
-        """Create a bootstrap dataset of the same size as the original dataset,
-        by randomly sampling with replacement from the original dataset.
+    def _get_bootstrap_dataset(
+        self, X: np.ndarray, y: np.ndarray, random_seed: int
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Create a same-sized bootstrap sample with replacement.
 
         Args:
-            X (np.ndarray): Attributes.
-            y (np.ndarray): Class labels.
-            random_seed (int): Random seed for reproducibility.
+            X: Feature matrix to sample from.
+            y: Labels aligned with ``X``.
+            random_seed: Seed for the bootstrap sample.
 
         Returns:
-            X_bootstrap (np.ndarray): Attributes of bootstrap dataset.
-            y_bootstrap (np.ndarray): Class labels of bootstrap dataset.
+            Tuple containing sampled features and sampled labels.
         """
         random_generator = np.random.default_rng(seed=random_seed)
-
-        bootstrap_size = len(y)
-
         bootstrap_indices = random_generator.choice(
-            a=np.arange(stop=bootstrap_size), size=bootstrap_size, replace=True)
-
+            np.arange(len(y)), size=len(y), replace=True
+        )
         return X[bootstrap_indices], y[bootstrap_indices]
 
-    def fit(self, X, y, attribute_names, attribute_types):
-        """Fit the random forest classifier.
+    def fit(
+        self,
+        X: np.ndarray,
+        y: np.ndarray,
+        attribute_names: list[str],
+        attribute_types: list[str],
+    ) -> "random_forest_classifier":
+        """Fit randomized decision trees on bootstrap samples.
 
         Args:
-            X (np.ndarray): Attributes.
-            y (np.ndarray): Class labels.
-            attribute_names (list): Attribute names.
-            attribute_types (list): Attribute types, either "numeric" or "categorical".
+            X: Training feature matrix.
+            y: Training labels aligned with ``X``.
+            attribute_names: Names of the feature columns.
+            attribute_types: Feature types, either ``numeric`` or ``categorical``.
 
         Returns:
-            self (random_forest_classifier): Fitted random forest classifier.
+            This fitted classifier.
         """
         self.random_forest = []
-
         for bootstrap in range(self.ntree):
-
-            X_bootstrap, y_bootstrap = self.get_bootstrap_dataset(X=X, y=y, random_seed=self.random_seed + bootstrap)
-
-            decision_tree = decision_tree_classifier(
+            X_bootstrap, y_bootstrap = self._get_bootstrap_dataset(
+                X=X, y=y, random_seed=self.random_seed + bootstrap
+            )
+            tree = decision_tree_classifier(
                 split_criterion=self.split_criterion,
                 majority_class_threshold=self.majority_class_threshold,
                 minimum_size_for_split=self.minimum_size_for_split,
                 minimum_split_quality_score=self.minimum_split_quality_score,
                 maximum_depth=self.maximum_depth,
-                random_attribute_selection=True, random_seed=self.random_seed + bootstrap)
-
-            decision_tree.fit(X=X_bootstrap, y=y_bootstrap,
-                              attribute_names=attribute_names,
-                              attribute_types=attribute_types)
-
-            self.random_forest.append(decision_tree)
-
+                random_attribute_selection=True,
+                random_seed=self.random_seed + bootstrap,
+            )
+            tree.fit(
+                X=X_bootstrap,
+                y=y_bootstrap,
+                attribute_names=attribute_names,
+                attribute_types=attribute_types,
+            )
+            self.random_forest.append(tree)
         return self
 
-    def predict_with_trees_in_forest(self, X):
-        """Predict class labels of instances with each tree in the forest.
+    def _predict_with_trees(self, X: np.ndarray) -> np.ndarray:
+        """Collect predictions from every tree in the forest.
 
         Args:
-            X (np.ndarray): Attributes.
+            X: Feature matrix to classify.
 
         Returns:
-            trees_predictions (np.ndarray): Predicted class labels of instances from each tree in the forest.
+            Matrix whose rows contain predictions from individual trees.
         """
-        trees_predictions = np.array(object=[decision_tree.predict(X=X) for decision_tree in self.random_forest])
+        return np.array([tree.predict(X=X) for tree in self.random_forest])
 
-        return trees_predictions
-
-    def predict(self, X):
-        """Predict class labels of instances by majority vote among trees.
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        """Predict labels by majority vote across the fitted trees.
 
         Args:
-            X (np.ndarray): Attributes.
+            X: Feature matrix to classify.
 
         Returns:
-            majority_predictions (np.ndarray): Predicted class labels of instances by majority vote among trees.
+            Array of majority-vote predictions, one per row of ``X``.
         """
-        trees_predictions = self.predict_with_trees_in_forest(X=X)
-
+        trees_predictions = self._predict_with_trees(X=X)
         majority_predictions = []
-
-        for trees_predictions_for_instance in trees_predictions.T:
-
-            predictions, counts = np.unique(ar=trees_predictions_for_instance, return_counts=True)
-
-            majority_prediction_for_instance = predictions[np.argmax(a=counts)]
-
-            majority_predictions.append(majority_prediction_for_instance)
-
-        majority_predictions = np.array(object=majority_predictions)
-
-        return majority_predictions
+        for predictions_for_instance in trees_predictions.T:
+            predictions, counts = np.unique(
+                predictions_for_instance, return_counts=True
+            )
+            majority_predictions.append(predictions[np.argmax(counts)])
+        return np.array(majority_predictions)

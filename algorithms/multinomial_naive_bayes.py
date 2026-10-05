@@ -1,198 +1,211 @@
-"""Functions to implement the multinomial naive bayes algorithm"""
+"""Educational implementation of multinomial Naive Bayes for token counts."""
+
+from __future__ import annotations
 
 from collections import Counter
+from typing import Any
+
 import numpy as np
+
 from .preprocessors import doc_to_bow_vector
 
-def compute_class_prior_probabilities(y, log_scale):
-    """Compute prior probabilities for each document class
+Document = list[str]
+Label = Any
+
+
+def compute_class_prior_probabilities(
+    labels: list[Label], log_scale: bool
+) -> dict[Label, float]:
+    """Compute prior probability for each document class.
 
     Args:
-        y (list): Class labels, one label per document.
-        log_scale (bool): Whether to return probabilities (False) or log-probabilities (True).
+        labels: Class label for each training document.
+        log_scale: Return logarithms instead of ordinary probabilities when true.
 
     Returns:
-        class_prior_probabilities (dict): Classes mapped to probabilities or log-probabilities.
+        Mapping from each class label to its prior probability or log probability.
     """
-
-    class_counts = Counter(y)
-    total_docs = sum(class_counts.values())
-    class_prior_probabilities = {}
-
-    for class_i, count in class_counts.items():
-        probability = count / total_docs
-        if log_scale:
-            probability = np.log(probability)
-        class_prior_probabilities[class_i] = probability
-
-    return class_prior_probabilities
+    class_counts = Counter(labels)
+    total_documents = sum(class_counts.values())
+    class_priors: dict[Label, float] = {}
+    for class_label, count in class_counts.items():
+        probability = count / total_documents
+        class_priors[class_label] = float(np.log(probability) if log_scale else probability)
+    return class_priors
 
 
-def compute_word_probabilities_given_class(X, y, vocab, alpha, log_scale):
-    """Compute word probabilities conditional on each document class.
+def compute_word_probabilities_given_class(
+    documents: list[Document],
+    labels: list[Label],
+    vocabulary: list[str],
+    alpha: float,
+    log_scale: bool,
+) -> dict[Label, np.ndarray]:
+    """Compute smoothed word probabilities conditional on each class.
 
     Args:
-        X (list): Documents, where each document is a list of words.
-        y (list): Class labels, one label per document in X.
-        vocab (list): Vocabulary containing all unique words.
-        alpha (float): Additive smoothing parameter.
-        log_scale (bool): Whether to return probabilities (False) or log-probabilities (True).
+        documents: Tokenized training documents.
+        labels: Class label aligned with each document.
+        vocabulary: Ordered vocabulary used for probability vectors.
+        alpha: Additive smoothing strength.
+        log_scale: Return log probabilities when true.
 
     Returns:
-        word_probabilities_given_class (dict): Classes mapped to arrays of word
-            probabilities or log-probabilities, ordered according to vocab.
+        Mapping from class labels to word-probability arrays ordered by vocabulary.
     """
-    
-    class_to_word_counts = {}
-    for doc, class_i in zip(X, y):
-        class_to_word_counts.setdefault(class_i, Counter()).update(doc)
+    class_word_counts: dict[Label, Counter[str]] = {}
+    for document, class_label in zip(documents, labels):
+        class_word_counts.setdefault(class_label, Counter()).update(document)
 
-    word_probabilities_given_class = {}
-
-    for class_i, word_counts in class_to_word_counts.items():
+    probabilities_by_class: dict[Label, np.ndarray] = {}
+    for class_label, word_counts in class_word_counts.items():
         counts = np.fromiter(
-            (word_counts.get(word, 0) for word in vocab),
+            (word_counts.get(word, 0) for word in vocabulary),
             dtype=np.float64,
-            count=len(vocab))
-
+            count=len(vocabulary),
+        )
+        denominator = counts.sum() + alpha * len(vocabulary)
         if log_scale:
-            probabilities = np.log(counts + alpha) - np.log(counts.sum() + alpha * len(vocab))
+            probabilities = np.log(counts + alpha) - np.log(denominator)
         else:
-            probabilities = (counts + alpha) / (counts.sum() + alpha * len(vocab))
-
-        word_probabilities_given_class[class_i] = probabilities
-
-    return word_probabilities_given_class
+            probabilities = (counts + alpha) / denominator
+        probabilities_by_class[class_label] = probabilities
+    return probabilities_by_class
 
 
 def compute_class_probability_given_doc(
-    class_prior_probability,
-    word_probabilities_given_class,
-    bow_vector,
-    log_scale):
-    """Compute probability of one class given one document.
+    class_prior_probability: float,
+    word_probabilities_given_class: np.ndarray,
+    bow_vector: np.ndarray,
+    log_scale: bool,
+) -> float:
+    """Compute one class score for a bag-of-words vector.
 
     Args:
-        class_prior_probability (float): Prior probability of the class.
-        word_probabilities_given_class (np.ndarray): Probability of each word given the class.
-        bow_vector (np.ndarray): Bag-of-Words vector for the document.
-        log_scale (bool): Whether probabilities are log-transformed (True) or not (False).
+        class_prior_probability: Prior probability or log prior for the class.
+        word_probabilities_given_class: Word probabilities for the class.
+        bow_vector: Word-count vector ordered by the vocabulary.
+        log_scale: Interpret inputs as logarithms when true.
 
     Returns:
-        class_probability_given_doc (float): Probability of the class given the document.
+        Probability score or log-probability score for the class and document.
     """
-
     if log_scale:
-        class_probability_given_doc = (
-            class_prior_probability + np.sum(bow_vector * word_probabilities_given_class))
+        score = class_prior_probability + np.sum(
+            bow_vector * word_probabilities_given_class
+        )
     else:
-        class_probability_given_doc = (
-            class_prior_probability * np.prod(word_probabilities_given_class ** bow_vector))
-
-    return class_probability_given_doc
+        score = class_prior_probability * np.prod(
+            word_probabilities_given_class**bow_vector
+        )
+    return float(score)
 
 
 def compute_class_probabilities_given_doc(
-    class_prior_probabilities,
-    word_probabilities_given_class,
-    bow_vector,
-    log_scale):
-    """Compute probability scores of all classes given one document.
+    class_prior_probabilities: dict[Label, float],
+    word_probabilities_given_class: dict[Label, np.ndarray],
+    bow_vector: np.ndarray,
+    log_scale: bool,
+) -> dict[Label, float]:
+    """Compute class scores for one bag-of-words vector.
 
     Args:
-        class_prior_probabilities (dict): Classes mapped to their prior probabilities.
-        word_probabilities_given_class (dict): Probability of each word given the class.
-        bow_vector (np.ndarray): Bag-of-Words vector for the document.
-        log_scale (bool): Whether probabilities are log-transformed (True) or not (False).
+        class_prior_probabilities: Prior or log-prior for each class.
+        word_probabilities_given_class: Word probabilities for each class.
+        bow_vector: Word-count vector ordered by the vocabulary.
+        log_scale: Interpret inputs as logarithms when true.
 
     Returns:
-        class_probabilities_given_doc (dict): Probability of each class given the document.
+        Mapping from each class label to its probability score.
     """
-
-    class_probabilities_given_doc = {}
-
-    for class_i, class_prior_probability in class_prior_probabilities.items():
-        class_probability_given_doc = compute_class_probability_given_doc(
+    return {
+        class_label: compute_class_probability_given_doc(
             class_prior_probability,
-            word_probabilities_given_class[class_i],
+            word_probabilities_given_class[class_label],
             bow_vector,
-            log_scale=log_scale)
-
-        class_probabilities_given_doc[class_i] = class_probability_given_doc
-
-    return class_probabilities_given_doc
+            log_scale,
+        )
+        for class_label, class_prior_probability in class_prior_probabilities.items()
+    }
 
 
 class multinomial_naive_bayes_classifier:
-    def __init__(self, alpha, log_scale):
-        """Initialise the multinomial naive bayes classifier
+    """Classify tokenized documents using multinomial Naive Bayes."""
+
+    def __init__(self, alpha: float, log_scale: bool) -> None:
+        """Initialize a multinomial Naive Bayes classifier.
 
         Args:
-             alpha (float): Additive smoothing parameter.
-            log_scale (bool): Whether to return probabilities (False) or log-probabilities (True).
+            alpha: Additive smoothing strength.
+            log_scale: Store and calculate probabilities in log space when true.
         """
-        
         self.alpha = alpha
         self.log_scale = log_scale
-        self.X_train = None
-        self.y_train = None
-        self.vocab = None
-        self.vocab_index = None
-        self.class_prior_probabilities = None
-        self.word_probabilities_given_class = None
+        self.X_train: list[Document] | None = None
+        self.y_train: list[Label] | None = None
+        self.vocab: list[str] | None = None
+        self.vocab_index: dict[str, int] | None = None
+        self.class_prior_probabilities: dict[Label, float] | None = None
+        self.word_probabilities_given_class: dict[Label, np.ndarray] | None = None
 
-    def fit(self, X_train, y_train, vocab):
-        """Fit the multinomial naive bayes classifier
+    def fit(
+        self, X_train: list[Document], y_train: list[Label], vocab: list[str]
+    ) -> "multinomial_naive_bayes_classifier":
+        """Estimate class priors and smoothed word probabilities.
 
         Args:
-            X_train (list): Documents, where each document is a list of words.
-            y_train (list): Class labels, one label per document in X.
-            vocab (list): Vocabulary containing all unique words.
+            X_train: Tokenized training documents.
+            y_train: Class labels aligned with ``X_train``.
+            vocab: Ordered vocabulary used to create count vectors.
 
         Returns:
-            self: Fitted classifier.
+            This fitted classifier.
         """
-
         self.X_train = X_train
         self.y_train = y_train
         self.vocab = list(vocab)
         self.vocab_index = {word: index for index, word in enumerate(self.vocab)}
         self.class_prior_probabilities = compute_class_prior_probabilities(
-            self.y_train, log_scale=self.log_scale)
+            self.y_train, log_scale=self.log_scale
+        )
         self.word_probabilities_given_class = compute_word_probabilities_given_class(
-            self.X_train, self.y_train, self.vocab,
-            alpha=self.alpha, log_scale=self.log_scale)
+            self.X_train,
+            self.y_train,
+            self.vocab,
+            alpha=self.alpha,
+            log_scale=self.log_scale,
+        )
         return self
 
-    def predict_one(self, doc):
-        """Predict class of one document.
+    def predict_one(self, document: Document) -> Label:
+        """Predict the most likely class for one tokenized document.
 
         Args:
-            doc (list): Document represented as a list of words.
+            document: Tokenized document to classify.
 
         Returns:
-            predicted_class: Class with the highest probability given the document.
+            Class label with the highest probability score.
         """
-     
-        bow_vector = np.array(doc_to_bow_vector(doc, self.vocab))
-        class_probabilities_given_doc = compute_class_probabilities_given_doc(
+        if self.vocab is None or self.class_prior_probabilities is None:
+            raise RuntimeError("Naive Bayes classifier must be fitted before prediction")
+        if self.word_probabilities_given_class is None:
+            raise RuntimeError("Naive Bayes word probabilities are not initialized")
+        bow_vector = np.array(doc_to_bow_vector(document, self.vocab))
+        class_scores = compute_class_probabilities_given_doc(
             self.class_prior_probabilities,
             self.word_probabilities_given_class,
             bow_vector,
-            log_scale=self.log_scale)
-        predicted_class = max(class_probabilities_given_doc, key=class_probabilities_given_doc.get)
+            log_scale=self.log_scale,
+        )
+        return max(class_scores, key=class_scores.get)
 
-        return predicted_class
+    def predict(self, documents: list[Document]) -> list[Label]:
+        """Predict the most likely class for each tokenized document.
 
-    def predict(self, docs):
-        """Predict class of multiple documents.
-        
         Args:
-            docs (list): Documents, where each document is a list of words.
+            documents: Tokenized documents to classify.
 
         Returns:
-            predicted_classes (list): Predicted class of documents.
+            Predicted class label for each document.
         """
-
-        predicted_classes = [self.predict_one(doc) for doc in docs]
-        return predicted_classes
+        return [self.predict_one(document) for document in documents]

@@ -1,8 +1,10 @@
-"""Functions for the decision tree algorithm"""
+"""Functions and tree nodes for the decision tree classifier."""
+
+from __future__ import annotations
 
 import numpy as np
 
-def entropy(y):
+def entropy(y: np.ndarray) -> float:
     """Compute entropy.
 
     Args:
@@ -17,7 +19,7 @@ def entropy(y):
     return -np.sum(class_probabilities * np.log2(class_probabilities))
 
 
-def information_gain(X, y, attribute):
+def information_gain(X: np.ndarray, y: np.ndarray, attribute: int) -> float:
     """Compute information gain.
 
     Args:
@@ -42,7 +44,7 @@ def information_gain(X, y, attribute):
     return original_entropy - average_entropy_after_split
 
 
-def gini(y):
+def gini(y: np.ndarray) -> float:
     """Compute Gini impurity.
 
     Args:
@@ -57,7 +59,7 @@ def gini(y):
     return 1 - np.sum(class_probabilities ** 2)
 
 
-def gini_split(X, y, attribute):
+def gini_split(X: np.ndarray, y: np.ndarray, attribute: int) -> float:
     """Compute Gini impurity after splitting on an attribute.
 
     Args:
@@ -80,7 +82,9 @@ def gini_split(X, y, attribute):
 
     return average_gini_after_split
 
-def get_best_categorical_attribute(X, y, testable_attributes, split_criterion):
+def get_best_categorical_attribute(
+        X: np.ndarray, y: np.ndarray, testable_attributes: list[int],
+        split_criterion: str) -> tuple[int, float]:
     """Find best categorical attribute for splitting data.
 
     Args:
@@ -113,7 +117,7 @@ def get_best_categorical_attribute(X, y, testable_attributes, split_criterion):
         raise ValueError("split_criterion must be 'information_gain' or 'gini'")
 
 
-def numeric_to_thresholded_value(numeric_value, threshold):
+def numeric_to_thresholded_value(numeric_value: float, threshold: float) -> str:
     """Convert numeric value to thresholded value.
 
     Args:
@@ -132,7 +136,8 @@ def numeric_to_thresholded_value(numeric_value, threshold):
     return thresholded_value
         
 
-def numeric_to_thresholded_attribute(numeric_attribute, threshold):
+def numeric_to_thresholded_attribute(
+        numeric_attribute: np.ndarray, threshold: float) -> np.ndarray:
     """Convert numeric attribute to thresholded attribute.
 
     Args:
@@ -151,7 +156,8 @@ def numeric_to_thresholded_attribute(numeric_attribute, threshold):
     return thresholded_attribute
 
 
-def get_best_threshold(numeric_attribute, y, split_criterion):
+def get_best_threshold(
+        numeric_attribute: np.ndarray, y: np.ndarray, split_criterion: str) -> float:
     """Find best threshold for numeric attribute.
 
     Args:
@@ -191,8 +197,9 @@ def get_best_threshold(numeric_attribute, y, split_criterion):
     else:
         raise ValueError("split_criterion must be 'information_gain' or 'gini'")
 
-def get_X_with_thresholded_attributes(X, y, testable_attributes,
-                                      split_criterion, attribute_types):
+def get_X_with_thresholded_attributes(
+        X: np.ndarray, y: np.ndarray, testable_attributes: list[int],
+        split_criterion: str, attribute_types: list[str]) -> tuple[np.ndarray, list[float | None]]:
     """Convert numeric attributes to thresholded attributes.
 
     Args:
@@ -224,7 +231,8 @@ def get_X_with_thresholded_attributes(X, y, testable_attributes,
     return X_with_thresholded_attributes, thresholds
 
 def get_best_categorical_or_numerical_attribute(
-        X, y, testable_attributes, split_criterion, attribute_types):
+        X: np.ndarray, y: np.ndarray, testable_attributes: list[int],
+        split_criterion: str, attribute_types: list[str]) -> tuple[int, float | None, float]:
     """Find best categorical or numeric attribute for splitting data.
 
     Args:
@@ -253,7 +261,8 @@ def get_best_categorical_or_numerical_attribute(
 
 
 def get_X_with_thresholded_best_attribute(
-        X, best_attribute, best_attribute_type, threshold):
+        X: np.ndarray, best_attribute: int, best_attribute_type: str,
+        threshold: float | None) -> np.ndarray:
     """Convert best attribute to thresholded attribute.
 
     Args:
@@ -278,30 +287,49 @@ def get_X_with_thresholded_best_attribute(
 
 
 class leaf_node:
-    def __init__(self, label):
+    """Leaf containing the class label returned by a terminal tree branch."""
+
+    def __init__(self, label: object) -> None:
         self.label = label
 
-    def predict(self, X_i=None):
+    def predict(self, X_i: np.ndarray | None = None) -> object:
+        """Return this leaf's label.
+
+        Args:
+            X_i: Unused feature vector supplied by the tree interface.
+
+        Returns:
+            Label stored by the leaf.
+        """
         return self.label
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         return isinstance(other, leaf_node) and self.label == other.label
 
 
 class decision_node:
-    def __init__(self, best_attribute, best_attribute_name,
-                 best_attribute_type, threshold, majority_class):
+    """Internal node that routes examples to child subtrees."""
+
+    def __init__(self, best_attribute: int, best_attribute_name: str,
+                 best_attribute_type: str, threshold: float | None,
+                 majority_class: object) -> None:
         self.best_attribute = best_attribute
         self.best_attribute_name = best_attribute_name
         self.best_attribute_type = best_attribute_type
         self.threshold = threshold
         self.majority_class = majority_class
-        self.edges = {}
+        self.edges: dict[object, leaf_node | decision_node] = {}
 
-    def add_edge(self, label, subtree):
+    def _add_edge(self, label: object, subtree: leaf_node | decision_node) -> None:
+        """Attach a subtree for one attribute value.
+
+        Args:
+            label: Attribute value labeling the edge.
+            subtree: Child node reached by the edge.
+        """
         self.edges[label] = subtree
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         return (
             isinstance(other, decision_node)
             and self.best_attribute == other.best_attribute
@@ -311,7 +339,15 @@ class decision_node:
             and self.majority_class == other.majority_class
             and self.edges == other.edges)
 
-    def predict(self, X_i):
+    def predict(self, X_i: np.ndarray) -> object:
+        """Route one feature vector to a child subtree or fallback label.
+
+        Args:
+            X_i: Feature vector to classify.
+
+        Returns:
+            Prediction returned by the selected child subtree.
+        """
         if self.best_attribute_type == "numeric":
             value = numeric_to_thresholded_value(
                 X_i[self.best_attribute],
@@ -327,15 +363,17 @@ class decision_node:
 
 
 class decision_tree_classifier:
+    """Train a decision tree using categorical or numeric attributes."""
+
     def __init__(
             self,
-            split_criterion,
-            majority_class_threshold,
-            minimum_size_for_split,
-            minimum_split_quality_score,
-            maximum_depth,
-            random_attribute_selection,
-            random_seed):
+            split_criterion: str,
+            majority_class_threshold: float,
+            minimum_size_for_split: int,
+            minimum_split_quality_score: float,
+            maximum_depth: int | None,
+            random_attribute_selection: bool,
+            random_seed: int) -> None:
         self.split_criterion = split_criterion
         self.majority_class_threshold = majority_class_threshold
         self.minimum_size_for_split = minimum_size_for_split
@@ -347,7 +385,9 @@ class decision_tree_classifier:
         self.attribute_types = None
         self.root = None
 
-    def fit(self, X, y, attribute_names, attribute_types):
+    def fit(
+            self, X: np.ndarray, y: np.ndarray, attribute_names: list[str],
+            attribute_types: list[str]) -> "decision_tree_classifier":
         """Fit the decision tree classifier.
 
         Args:
@@ -363,18 +403,26 @@ class decision_tree_classifier:
         self.attribute_types = attribute_types
 
         testable_attributes = list(range(X.shape[1]))
-        self.root = self.decision_tree(
+        self.root = self._decision_tree(
             X=X, y=y, testable_attributes=testable_attributes, depth=0)
 
         return self
 
-    def predict_single_instance(self, X_i):
+    def _predict_single_instance(self, X_i: np.ndarray) -> object:
+        """Predict one instance by traversing the fitted tree.
+
+        Args:
+            X_i: Feature vector to classify.
+
+        Returns:
+            Predicted class label.
+        """
         if self.root is None:
             raise ValueError("The decision tree must be fitted before prediction.")
 
         return self.root.predict(X_i)
 
-    def predict(self, X):
+    def predict(self, X: np.ndarray) -> np.ndarray:
         """Predict class labels.
 
         Args:
@@ -386,11 +434,24 @@ class decision_tree_classifier:
         if self.root is None:
             raise ValueError("The decision tree must be fitted before prediction.")
 
-        predictions = [self.predict_single_instance(X_i) for X_i in X]
+        predictions = [self._predict_single_instance(X_i) for X_i in X]
 
         return np.array(predictions)
 
-    def decision_tree(self, X, y, testable_attributes, depth):
+    def _decision_tree(
+            self, X: np.ndarray, y: np.ndarray, testable_attributes: list[int],
+            depth: int) -> leaf_node | decision_node:
+        """Recursively build a subtree from a training partition.
+
+        Args:
+            X: Feature matrix for the current partition.
+            y: Labels for the current partition.
+            testable_attributes: Attribute indices still available for splitting.
+            depth: Current depth in the tree.
+
+        Returns:
+            Root node for the recursively constructed subtree.
+        """
 
         # dataset D is split into features X and label y
         # testable_attributes is the list of attributes that can still be tested
@@ -485,13 +546,13 @@ class decision_tree_classifier:
 
             # otherwise recursively construct the subtree
             else:
-                subtree = self.decision_tree(
+                subtree = self._decision_tree(
                     X=X_partition,
                     y=y_partition,
                     testable_attributes=testable_attributes,
                     depth=depth + 1)
 
             # create edge from node to root of subtree, labeling edge with attribute value
-            node.add_edge(label=value, subtree=subtree)
+                node._add_edge(label=value, subtree=subtree)
 
         return node

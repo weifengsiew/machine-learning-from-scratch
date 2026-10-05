@@ -1,10 +1,29 @@
-"""Functions to print outputs in context of reproducing backpropagation examples"""
+"""Console-formatting helpers for verbose neural-network training output."""
 
-def format_vector(values):
+from __future__ import annotations
+
+import numpy as np
+
+
+def format_vector(values: np.ndarray) -> str:
+    """Format a numeric vector for readable console output.
+
+    Args:
+        values: Numeric values to format.
+
+    Returns:
+        Space-separated values formatted to five decimal places.
+    """
     return "  ".join(f"{value:.5f}" for value in values)
 
 
-def print_initial_network(thetas, regularization_strength):
+def print_initial_network(thetas: list[np.ndarray], regularization_strength: float) -> None:
+    """Print network shape, regularization, and initial weights.
+
+    Args:
+        thetas: Weight matrices for each network layer.
+        regularization_strength: L2 regularization strength to display.
+    """
     num_neurons_per_layer = [thetas[0].shape[1] - 1]
 
     for theta in thetas:
@@ -23,7 +42,13 @@ def print_initial_network(thetas, regularization_strength):
         print()
 
 
-def print_training_set(X_train, y_train):
+def print_training_set(X_train: np.ndarray, y_train: np.ndarray) -> None:
+    """Print training feature vectors and target vectors.
+
+    Args:
+        X_train: Training feature matrix.
+        y_train: Training target matrix.
+    """
     print("Training set")
 
     for instance_number, (x, y) in enumerate(zip(X_train, y_train), start=1):
@@ -34,7 +59,12 @@ def print_training_set(X_train, y_train):
     print()
 
 
-def print_iteration_header(iteration):
+def print_iteration_header(iteration: int) -> None:
+    """Print a heading for one training iteration.
+
+    Args:
+        iteration: One-based iteration number.
+    """
     iteration_names = {
         1: "First",
         2: "Second",
@@ -52,12 +82,28 @@ def print_iteration_header(iteration):
     print("==============================")
 
 
-def print_cost_section_header():
+def print_cost_section_header() -> None:
+    """Print the heading for the cost-calculation section."""
     print("--------------------------------------------")
     print("Computing the error/cost, J, of the network")
 
 
-def print_forward_propagation_output(instance_number, x, y, layers_preactivations, layers_activations, y_pred, cost):
+def print_forward_propagation_output(
+        instance_number: int, x: np.ndarray, y: np.ndarray,
+        layers_preactivations: list[np.ndarray],
+        layers_activations: list[np.ndarray], y_pred: np.ndarray,
+        cost: float) -> None:
+    """Print forward-propagation values for one training instance.
+
+    Args:
+        instance_number: One-based training-instance number.
+        x: Input feature vector.
+        y: Expected target vector.
+        layers_preactivations: Weighted sums for network layers.
+        layers_activations: Activations for network layers.
+        y_pred: Predicted output vector.
+        cost: Instance cost.
+    """
     print(f"\tProcessing training instance {instance_number}")
     print(f"\tForward propagating the input [{format_vector(x)}]")
 
@@ -74,16 +120,31 @@ def print_forward_propagation_output(instance_number, x, y, layers_preactivation
     print(f"\tCost, J, associated with instance {instance_number}: {cost:.3f}\n")
 
 
-def print_final_cost(final_cost):
+def print_final_cost(final_cost: float) -> None:
+    """Print the final regularized training cost.
+
+    Args:
+        final_cost: Regularized cost after processing the training set.
+    """
     print(f"Final (regularized) cost, J, based on the complete training set: {final_cost:.5f}\n")
 
 
-def print_backpropagation_section_header():
+def print_backpropagation_section_header() -> None:
+    """Print the heading for the backpropagation section."""
     print("\n--------------------------------------------")
     print("Running backpropagation")
 
 
-def print_backpropagation_output(instance_number, deltas, gradients):
+def print_backpropagation_output(
+        instance_number: int, deltas: list[np.ndarray],
+        gradients: list[np.ndarray]) -> None:
+    """Print deltas and gradients for one training instance.
+
+    Args:
+        instance_number: One-based training-instance number.
+        deltas: Backpropagated error vectors.
+        gradients: Weight gradients for each layer.
+    """
     print(f"\tComputing gradients based on training instance {instance_number}")
 
     for layer_number, delta in reversed(list(enumerate(deltas, start=2))):
@@ -100,7 +161,12 @@ def print_backpropagation_output(instance_number, deltas, gradients):
         print()
 
 
-def print_final_gradients(final_gradients):
+def print_final_gradients(final_gradients: list[np.ndarray]) -> None:
+    """Print averaged regularized gradients.
+
+    Args:
+        final_gradients: Final gradient matrix for each network layer.
+    """
     print("\tThe entire training set has been processed. Computing the average (regularized) gradients:")
 
     for theta_number, final_gradient in enumerate(final_gradients, start=1):
@@ -112,7 +178,13 @@ def print_final_gradients(final_gradients):
         print()
 
 
-def print_updated_thetas(thetas, iteration):
+def print_updated_thetas(thetas: list[np.ndarray], iteration: int) -> None:
+    """Print weights after one training iteration.
+
+    Args:
+        thetas: Updated weight matrices.
+        iteration: One-based iteration number.
+    """
     print("--------------------------------------------")
     print(f"\tUpdated theta values after iteration {iteration}:")
 
@@ -125,6 +197,12 @@ def print_updated_thetas(thetas, iteration):
         print()
 
 
-def print_output_paths(example1_output_path, example2_output_path):
+def print_output_paths(example1_output_path: str, example2_output_path: str) -> None:
+    """Print paths where verbose example output was written.
+
+    Args:
+        example1_output_path: Path for the first example output.
+        example2_output_path: Path for the second example output.
+    """
     print(f"Wrote {example1_output_path}")
     print(f"Wrote {example2_output_path}")
