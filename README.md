@@ -12,7 +12,12 @@ In this repository, we will compare the inductive biases of several algorithms.
 
 ### K-nearest neighbors
 
-KNN predicts a new example from the labels of nearby training examples. Its inductive bias is local smoothness: points that are close in feature space are expected to have similar labels. The choice of `k` controls the amount of smoothing. A small `k` can preserve local structure but is sensitive to noise; a large `k` produces a smoother, more biased decision boundary. Because distance is central to the method, numeric features should usually be standardized first.
+KNN predicts the label of a new example from the labels of nearby training examples. Its inductive bias is local smoothness: 
+points that are close in feature space are expected to have similar labels. The choice of `k` controls the amount of smoothing. 
+A small k is sensitive to noise, such as outliers or mislabeled examples. A large k smooths the boundary but may obscure real
+local patterns. Here, bias means systematic error caused by an algorithm’s assumptions, which limit the patterns it can learn from the data.
+Because KNN chooses neighbors by distance, features with larger numeric ranges can dominate the distance calculation and, in turn, the prediction. 
+Standardizing numeric features puts them on comparable scales, so differences in units alone don’t determine which examples are nearest.
 
 ### Decision tree
 
