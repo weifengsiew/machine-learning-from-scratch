@@ -40,7 +40,7 @@ figures/parkinsons/
 
 The notebook produces parameter-performance plots for KNN, the decision tree, and the random forest, together with a three-panel neural-network training-history figure. Open [`parkinsons_demo.ipynb`](parkinsons_demo.ipynb) from the repository root and run all cells.
 
-For the text-specific model, open [`naive_bayes_demo.ipynb`](naive_bayes_demo.ipynb). It uses a tiny tokenized sports-versus-politics dataset to show bag-of-words probabilities, class priors, additive smoothing, and an `alpha` performance sweep.
+For the text-specific model, open [`naive_bayes_demo.ipynb`](naive_bayes_demo.ipynb). It uses a compact subset of real labeled music reviews to show tokenization, bag-of-words probabilities, class priors, additive smoothing, and an `alpha` performance sweep.
 
 ## Project layout
 
