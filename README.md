@@ -58,7 +58,10 @@ It is less suitable for continuous-valued measurements, which are not naturally 
 
 ### Neural network
 
-A feed-forward neural network represents a prediction as a composition of learned linear transformations and nonlinear activation functions. Its inductive bias is flexible: the target is assumed to be expressible through distributed combinations of features rather than only local neighborhoods or explicit threshold rules. This flexibility allows the network to model complex interactions, but optimization, initialization, architecture, and regularization have a larger effect on its behavior. Training and test histories help reveal whether learning is generalizing or overfitting.
+A feed-forward neural network makes predictions by passing inputs through layers of learned transformations and nonlinear activation functions. 
+Its inductive bias is relatively flexible: layers can combine information from many features to learn complex patterns and interactions, without requiring 
+explicit threshold rules or local relationships. This flexibility means the network’s behavior depends strongly on its architecture, initialization, 
+optimization, and regularization. Comparing training and test performance over time helps show whether it is learning patterns that generalize or beginning to overfit.
 
 ## Demonstration
 
