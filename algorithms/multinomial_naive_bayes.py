@@ -30,7 +30,9 @@ def compute_class_prior_probabilities(
     class_priors: dict[Label, float] = {}
     for class_label, count in class_counts.items():
         probability = count / total_documents
-        class_priors[class_label] = float(np.log(probability) if log_scale else probability)
+        class_priors[class_label] = float(
+            np.log(probability) if log_scale else probability
+        )
     return class_priors
 
 
@@ -187,7 +189,9 @@ class multinomial_naive_bayes_classifier:
             Class label with the highest probability score.
         """
         if self.vocab is None or self.class_prior_probabilities is None:
-            raise RuntimeError("Naive Bayes classifier must be fitted before prediction")
+            raise RuntimeError(
+                "Naive Bayes classifier must be fitted before prediction"
+            )
         if self.word_probabilities_given_class is None:
             raise RuntimeError("Naive Bayes word probabilities are not initialized")
         bow_vector = np.array(doc_to_bow_vector(document, self.vocab))

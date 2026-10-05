@@ -48,8 +48,11 @@ def compute_cost(y_pred: np.ndarray, y_true: np.ndarray) -> float:
 
 
 def compute_deltas(
-        thetas: list[np.ndarray], y_pred: np.ndarray, y_true: np.ndarray,
-        layers_activations: list[np.ndarray]) -> list[np.ndarray]:
+    thetas: list[np.ndarray],
+    y_pred: np.ndarray,
+    y_true: np.ndarray,
+    layers_activations: list[np.ndarray],
+) -> list[np.ndarray]:
     """Compute delta values.
 
     Args:
@@ -64,9 +67,13 @@ def compute_deltas(
     output_layer_delta = y_pred - y_true
     deltas = [output_layer_delta]
 
-    for theta_next, activation_current in zip(reversed(thetas[1:]), reversed(layers_activations[1:-1])):
+    for theta_next, activation_current in zip(
+        reversed(thetas[1:]), reversed(layers_activations[1:-1])
+    ):
         delta_next = deltas[0]
-        delta_current = (theta_next.T @ delta_next) * activation_current * (1 - activation_current)
+        delta_current = (
+            (theta_next.T @ delta_next) * activation_current * (1 - activation_current)
+        )
         delta_current = delta_current[1:]
         deltas.insert(0, delta_current)
 
@@ -74,7 +81,8 @@ def compute_deltas(
 
 
 def compute_gradients(
-        activations: list[np.ndarray], deltas: list[np.ndarray]) -> list[np.ndarray]:
+    activations: list[np.ndarray], deltas: list[np.ndarray]
+) -> list[np.ndarray]:
     """Compute gradients for one training instance.
 
     Args:
@@ -108,7 +116,8 @@ def accumulate_cost(total_cost: float, cost: float) -> float:
 
 
 def accumulate_gradients(
-        gradient_totals: list[np.ndarray], gradients: list[np.ndarray]) -> list[np.ndarray]:
+    gradient_totals: list[np.ndarray], gradients: list[np.ndarray]
+) -> list[np.ndarray]:
     """Add gradients from one training instance to gradient totals.
 
     Args:
@@ -125,8 +134,11 @@ def accumulate_gradients(
 
 
 def regularize_and_average_gradients(
-        thetas: list[np.ndarray], gradient_totals: list[np.ndarray],
-        regularization_strength: float, num_instances: int) -> list[np.ndarray]:
+    thetas: list[np.ndarray],
+    gradient_totals: list[np.ndarray],
+    regularization_strength: float,
+    num_instances: int,
+) -> list[np.ndarray]:
     """Compute L2-regularized gradients averaged across training instances.
 
     Args:
@@ -150,8 +162,11 @@ def regularize_and_average_gradients(
 
 
 def regularize_and_average_cost(
-        thetas: list[np.ndarray], total_cost: float,
-        regularization_strength: float, num_instances: int) -> float:
+    thetas: list[np.ndarray],
+    total_cost: float,
+    regularization_strength: float,
+    num_instances: int,
+) -> float:
     """Compute average L2-regularized binary cross-entropy loss.
 
     Args:
@@ -171,8 +186,8 @@ def regularize_and_average_cost(
 
 
 def compute_average_regularized_cost_over_instances(
-        network: NeuralNetwork, X: np.ndarray, y: np.ndarray,
-        regularization_strength: float) -> float:
+    network: NeuralNetwork, X: np.ndarray, y: np.ndarray, regularization_strength: float
+) -> float:
     """Compute average L2-regularized binary cross-entropy loss over instances.
 
     Args:
@@ -191,13 +206,15 @@ def compute_average_regularized_cost_over_instances(
         cost = compute_cost(y_pred_i, y_i)
         total_cost = accumulate_cost(total_cost, cost)
 
-    cost = regularize_and_average_cost(network.thetas, total_cost, regularization_strength, len(X))
+    cost = regularize_and_average_cost(
+        network.thetas, total_cost, regularization_strength, len(X)
+    )
     return cost
 
 
 def compute_binary_classification_metrics(
-        labels: np.ndarray, predictions: np.ndarray,
-        positive_label: Any) -> tuple[float, float, float, float]:
+    labels: np.ndarray, predictions: np.ndarray, positive_label: Any
+) -> tuple[float, float, float, float]:
     """Compute classification metrics for one positive label.
 
     Args:
@@ -225,7 +242,8 @@ def compute_binary_classification_metrics(
 
 
 def compute_multiclass_classification_metrics(
-        labels: np.ndarray, predictions: np.ndarray) -> tuple[float, float, float, float]:
+    labels: np.ndarray, predictions: np.ndarray
+) -> tuple[float, float, float, float]:
     """Compute accuracy and macroaveraged classification metrics.
 
     Args:
@@ -265,7 +283,8 @@ def compute_multiclass_classification_metrics(
 
 
 def compute_metrics_over_instances(
-        network: NeuralNetwork, X: np.ndarray, y: np.ndarray) -> tuple[float, float]:
+    network: NeuralNetwork, X: np.ndarray, y: np.ndarray
+) -> tuple[float, float]:
     """Compute classification metrics over instances.
 
     Args:
@@ -283,8 +302,12 @@ def compute_metrics_over_instances(
 
 
 def create_batches(
-        X: np.ndarray, y: np.ndarray, batch_size: int, shuffle: bool,
-        random_generator: np.random.Generator) -> list[tuple[np.ndarray, np.ndarray]]:
+    X: np.ndarray,
+    y: np.ndarray,
+    batch_size: int,
+    shuffle: bool,
+    random_generator: np.random.Generator,
+) -> list[tuple[np.ndarray, np.ndarray]]:
     """Create batches of training data.
 
     Args:
@@ -301,7 +324,9 @@ def create_batches(
         raise ValueError("batch_size should be at least 1")
 
     if batch_size > len(X):
-        raise ValueError("batch_size should not exceed the number of training instances")
+        raise ValueError(
+            "batch_size should not exceed the number of training instances"
+        )
 
     X = np.array(X)
     y = np.array(y)
@@ -314,7 +339,7 @@ def create_batches(
     batches = []
 
     for start_index in range(0, len(X), batch_size):
-        batch_indices = indices[start_index:start_index + batch_size]
+        batch_indices = indices[start_index : start_index + batch_size]
         X_batch = X[batch_indices]
         y_batch = y[batch_indices]
         batches.append((X_batch, y_batch))
@@ -323,9 +348,12 @@ def create_batches(
 
 
 def initialize_thetas(
-        num_input_neurons: int, num_hidden_layers: int,
-        num_neurons_per_hidden_layer: int, num_output_neurons: int,
-        random_seed: int | None = None) -> list[np.ndarray]:
+    num_input_neurons: int,
+    num_hidden_layers: int,
+    num_neurons_per_hidden_layer: int,
+    num_output_neurons: int,
+    random_seed: int | None = None,
+) -> list[np.ndarray]:
     """Initialize theta matrices using Gaussian distribution.
 
     Args:
@@ -347,19 +375,24 @@ def initialize_thetas(
     random_generator = np.random.default_rng(random_seed)
     thetas = []
 
-    theta_input_to_hidden = random_generator.normal(0.0, 1.0,
-        size=(num_neurons_per_hidden_layer, num_input_neurons + 1))
+    theta_input_to_hidden = random_generator.normal(
+        0.0, 1.0, size=(num_neurons_per_hidden_layer, num_input_neurons + 1)
+    )
 
     thetas.append(theta_input_to_hidden)
 
     for _ in range(num_hidden_layers - 1):
-        theta_hidden_to_hidden = random_generator.normal(0.0, 1.0,
-            size=(num_neurons_per_hidden_layer, num_neurons_per_hidden_layer + 1))
+        theta_hidden_to_hidden = random_generator.normal(
+            0.0,
+            1.0,
+            size=(num_neurons_per_hidden_layer, num_neurons_per_hidden_layer + 1),
+        )
 
         thetas.append(theta_hidden_to_hidden)
 
-    theta_hidden_to_output = random_generator.normal(0.0, 1.0,
-        size=(num_output_neurons, num_neurons_per_hidden_layer + 1))
+    theta_hidden_to_output = random_generator.normal(
+        0.0, 1.0, size=(num_output_neurons, num_neurons_per_hidden_layer + 1)
+    )
 
     thetas.append(theta_hidden_to_output)
 
@@ -370,9 +403,11 @@ class NeuralNetwork:
     """Train a feed-forward neural network with gradient descent."""
 
     def __init__(
-            self, thetas: list[np.ndarray] | None = None,
-            num_hidden_layers: int | None = None,
-            num_neurons_per_hidden_layer: int | None = None) -> None:
+        self,
+        thetas: list[np.ndarray] | None = None,
+        num_hidden_layers: int | None = None,
+        num_neurons_per_hidden_layer: int | None = None,
+    ) -> None:
         """Initialize neural network.
 
         Args:
@@ -400,7 +435,9 @@ class NeuralNetwork:
         activation = prepend_bias_term(x)
         return activation
 
-    def _hidden_layer(self, theta: np.ndarray, input: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def _hidden_layer(
+        self, theta: np.ndarray, input: np.ndarray
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Compute output values from one hidden layer.
 
         Args:
@@ -416,7 +453,9 @@ class NeuralNetwork:
         activation = prepend_bias_term(activation)
         return preactivation, activation
 
-    def _hidden_layers(self, input: np.ndarray) -> tuple[list[np.ndarray], list[np.ndarray], np.ndarray]:
+    def _hidden_layers(
+        self, input: np.ndarray
+    ) -> tuple[list[np.ndarray], list[np.ndarray], np.ndarray]:
         """Compute output values from all hidden layers.
 
         Args:
@@ -455,7 +494,9 @@ class NeuralNetwork:
         activation = sigmoid(preactivation)
         return preactivation, activation
 
-    def _forward_propagate(self, x: np.ndarray) -> tuple[list[np.ndarray], list[np.ndarray], np.ndarray]:
+    def _forward_propagate(
+        self, x: np.ndarray
+    ) -> tuple[list[np.ndarray], list[np.ndarray], np.ndarray]:
         """Forward propagate one training instance.
 
         Args:
@@ -470,7 +511,11 @@ class NeuralNetwork:
         layers_activations = [input_layer_activation]
         layers_preactivations = []
 
-        hidden_layers_preactivations, hidden_layers_activations, final_hidden_activation = self._hidden_layers(input_layer_activation)
+        (
+            hidden_layers_preactivations,
+            hidden_layers_activations,
+            final_hidden_activation,
+        ) = self._hidden_layers(input_layer_activation)
         layers_preactivations.extend(hidden_layers_preactivations)
         layers_activations.extend(hidden_layers_activations)
 
@@ -480,7 +525,9 @@ class NeuralNetwork:
 
         return layers_preactivations, layers_activations, y_pred
 
-    def configure_for_fit(self, regularization_strength: float, step_size: float) -> None:
+    def configure_for_fit(
+        self, regularization_strength: float, step_size: float
+    ) -> None:
         """Configure settings used during fitting.
 
         Args:
@@ -512,14 +559,8 @@ class NeuralNetwork:
             y (np.ndarray): Original class labels.
         """
         labels = np.unique(y)
-        self.label_to_index = {
-            label: index
-            for index, label in enumerate(labels)
-        }
-        self.index_to_label = {
-            index: label
-            for index, label in enumerate(labels)
-        }
+        self.label_to_index = {label: index for index, label in enumerate(labels)}
+        self.index_to_label = {index: label for index, label in enumerate(labels)}
 
     def _encode_labels(self, y: np.ndarray) -> np.ndarray:
         """Encode original labels as neural network targets.
@@ -539,7 +580,9 @@ class NeuralNetwork:
 
         return y_encoded
 
-    def _prepare_labels_for_fit(self, y_train: np.ndarray, y_test: np.ndarray | None) -> tuple[np.ndarray, np.ndarray | None, np.ndarray, np.ndarray | None]:
+    def _prepare_labels_for_fit(
+        self, y_train: np.ndarray, y_test: np.ndarray | None
+    ) -> tuple[np.ndarray, np.ndarray | None, np.ndarray, np.ndarray | None]:
         """Prepare labels for training while preserving labels for metrics.
 
         Args:
@@ -569,7 +612,9 @@ class NeuralNetwork:
 
         return y_train_encoded, y_test_encoded, y_train_for_metrics, y_test_for_metrics
 
-    def _initialize_weights_for_fit(self, X_train: np.ndarray, y_train: np.ndarray, random_seed: int | None) -> None:
+    def _initialize_weights_for_fit(
+        self, X_train: np.ndarray, y_train: np.ndarray, random_seed: int | None
+    ) -> None:
         """Initialize weights when they were not supplied during construction.
 
         Args:
@@ -583,7 +628,8 @@ class NeuralNetwork:
         if self.num_hidden_layers is None or self.num_neurons_per_hidden_layer is None:
             raise ValueError(
                 "num_hidden_layers and num_neurons_per_hidden_layer are required "
-                "when thetas are not supplied")
+                "when thetas are not supplied"
+            )
 
         self.thetas = initialize_thetas(
             num_input_neurons=X_train.shape[1],
@@ -594,10 +640,18 @@ class NeuralNetwork:
         )
 
     def fit(
-            self, X_train: np.ndarray, y_train: np.ndarray, num_iterations: int,
-            batch_size: int, random_seed: int, shuffle: bool, verbose: bool,
-            record_history: bool, X_test: np.ndarray | None = None,
-            y_test: np.ndarray | None = None) -> dict[str, list[Any]] | None:
+        self,
+        X_train: np.ndarray,
+        y_train: np.ndarray,
+        num_iterations: int,
+        batch_size: int,
+        random_seed: int,
+        shuffle: bool,
+        verbose: bool,
+        record_history: bool,
+        X_test: np.ndarray | None = None,
+        y_test: np.ndarray | None = None,
+    ) -> dict[str, list[Any]] | None:
         """Fit neural network.
 
         Args:
@@ -617,12 +671,15 @@ class NeuralNetwork:
                 Returns None when record_history is False.
         """
         if verbose and batch_size != len(X_train):
-            raise ValueError("verbose=True currently supports only full-batch gradient descent")
+            raise ValueError(
+                "verbose=True currently supports only full-batch gradient descent"
+            )
 
         X_train = np.array(X_train)
         X_test = None if X_test is None else np.array(X_test)
-        y_train, y_test, y_train_for_metrics, y_test_for_metrics = self._prepare_labels_for_fit(
-            y_train, y_test)
+        y_train, y_test, y_train_for_metrics, y_test_for_metrics = (
+            self._prepare_labels_for_fit(y_train, y_test)
+        )
         self._initialize_weights_for_fit(X_train, y_train, random_seed)
 
         history = None
@@ -652,7 +709,9 @@ class NeuralNetwork:
         train_instances_seen = 0
 
         for iteration in range(num_iterations):
-            batches = create_batches(X_train, y_train, batch_size, shuffle, random_generator)
+            batches = create_batches(
+                X_train, y_train, batch_size, shuffle, random_generator
+            )
 
             if verbose:
                 backpropagation_outputs = []
@@ -663,32 +722,53 @@ class NeuralNetwork:
                 total_cost = 0.0
                 gradient_totals = [np.zeros_like(theta) for theta in self.thetas]
 
-                for instance_number, (x_i, y_i) in enumerate(zip(X_batch, y_batch), start=1):
-                    layers_preactivations, layers_activations, y_pred_i = self._forward_propagate(x_i)
+                for instance_number, (x_i, y_i) in enumerate(
+                    zip(X_batch, y_batch), start=1
+                ):
+                    layers_preactivations, layers_activations, y_pred_i = (
+                        self._forward_propagate(x_i)
+                    )
                     cost = compute_cost(y_pred_i, y_i)
                     total_cost = accumulate_cost(total_cost, cost)
-                    deltas = compute_deltas(self.thetas, y_pred_i, y_i, layers_activations)
+                    deltas = compute_deltas(
+                        self.thetas, y_pred_i, y_i, layers_activations
+                    )
                     gradients = compute_gradients(layers_activations, deltas)
 
                     gradient_totals = accumulate_gradients(gradient_totals, gradients)
 
                     if verbose:
-                        backpropagation_outputs.append((instance_number, deltas, gradients))
-                        printers.print_forward_propagation_output(instance_number, x_i, y_i,
-                                                                       layers_preactivations, layers_activations,
-                                                                       y_pred_i, cost)
+                        backpropagation_outputs.append(
+                            (instance_number, deltas, gradients)
+                        )
+                        printers.print_forward_propagation_output(
+                            instance_number,
+                            x_i,
+                            y_i,
+                            layers_preactivations,
+                            layers_activations,
+                            y_pred_i,
+                            cost,
+                        )
 
                 final_gradients = regularize_and_average_gradients(
-                    self.thetas, gradient_totals, self.regularization_strength, len(X_batch))
+                    self.thetas,
+                    gradient_totals,
+                    self.regularization_strength,
+                    len(X_batch),
+                )
                 final_cost = regularize_and_average_cost(
-                    self.thetas, total_cost, self.regularization_strength, len(X_batch))
+                    self.thetas, total_cost, self.regularization_strength, len(X_batch)
+                )
 
                 if verbose:
                     printers.print_final_cost(final_cost)
                     printers.print_backpropagation_section_header()
 
                     for instance_number, deltas, gradients in backpropagation_outputs:
-                        printers.print_backpropagation_output(instance_number, deltas, gradients)
+                        printers.print_backpropagation_output(
+                            instance_number, deltas, gradients
+                        )
 
                     printers.print_final_gradients(final_gradients)
 
@@ -698,8 +778,12 @@ class NeuralNetwork:
                 train_instances_seen += len(X_batch)
 
                 if record_history:
-                    train_cost = compute_average_regularized_cost_over_instances(self, X_train, y_train, self.regularization_strength)
-                    train_accuracy, train_f1 = compute_metrics_over_instances(self, X_train, y_train_for_metrics)
+                    train_cost = compute_average_regularized_cost_over_instances(
+                        self, X_train, y_train, self.regularization_strength
+                    )
+                    train_accuracy, train_f1 = compute_metrics_over_instances(
+                        self, X_train, y_train_for_metrics
+                    )
 
                     history["iterations"].append(iteration + 1)
                     history["batches"].append(batch_number)
@@ -710,8 +794,12 @@ class NeuralNetwork:
                     history["train_f1"].append(train_f1)
 
                     if X_test is not None and y_test is not None:
-                        test_cost = compute_average_regularized_cost_over_instances(self, X_test, y_test, self.regularization_strength)
-                        test_accuracy, test_f1 = compute_metrics_over_instances(self, X_test, y_test_for_metrics)
+                        test_cost = compute_average_regularized_cost_over_instances(
+                            self, X_test, y_test, self.regularization_strength
+                        )
+                        test_accuracy, test_f1 = compute_metrics_over_instances(
+                            self, X_test, y_test_for_metrics
+                        )
                     else:
                         test_cost = None
                         test_accuracy = None

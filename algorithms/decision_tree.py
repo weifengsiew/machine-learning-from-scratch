@@ -39,8 +39,9 @@ def information_gain(X: np.ndarray, y: np.ndarray, attribute: int) -> float:
         y_partition = y[partition]
         weight = len(y_partition) / len(y)
 
-        average_entropy_after_split = (
-            average_entropy_after_split + weight * entropy(y_partition))
+        average_entropy_after_split = average_entropy_after_split + weight * entropy(
+            y_partition
+        )
 
     return original_entropy - average_entropy_after_split
 
@@ -57,7 +58,7 @@ def gini(y: np.ndarray) -> float:
     _classes, class_counts = np.unique(y, return_counts=True)
     class_probabilities = class_counts / len(y)
 
-    return 1 - np.sum(class_probabilities ** 2)
+    return 1 - np.sum(class_probabilities**2)
 
 
 def gini_split(X: np.ndarray, y: np.ndarray, attribute: int) -> float:
@@ -78,14 +79,14 @@ def gini_split(X: np.ndarray, y: np.ndarray, attribute: int) -> float:
         y_partition = y[partition]
         weight = len(y_partition) / len(y)
 
-        average_gini_after_split = (
-            average_gini_after_split + weight * gini(y_partition))
+        average_gini_after_split = average_gini_after_split + weight * gini(y_partition)
 
     return average_gini_after_split
 
+
 def get_best_categorical_attribute(
-        X: np.ndarray, y: np.ndarray, testable_attributes: list[int],
-        split_criterion: str) -> tuple[int, float]:
+    X: np.ndarray, y: np.ndarray, testable_attributes: list[int], split_criterion: str
+) -> tuple[int, float]:
     """Find best categorical attribute for splitting data.
 
     Args:
@@ -99,7 +100,9 @@ def get_best_categorical_attribute(
         best_split_quality_score (float): Split quality score of best attribute.
     """
     if split_criterion == "information_gain":
-        information_gains = [information_gain(X, y, attribute) for attribute in testable_attributes]
+        information_gains = [
+            information_gain(X, y, attribute) for attribute in testable_attributes
+        ]
 
         best_attribute_index = np.argmax(information_gains)
         best_attribute = testable_attributes[best_attribute_index]
@@ -135,10 +138,11 @@ def numeric_to_thresholded_value(numeric_value: float, threshold: float) -> str:
         thresholded_value = f">{threshold}"
 
     return thresholded_value
-        
+
 
 def numeric_to_thresholded_attribute(
-        numeric_attribute: np.ndarray, threshold: float) -> np.ndarray:
+    numeric_attribute: np.ndarray, threshold: float
+) -> np.ndarray:
     """Convert numeric attribute to thresholded attribute.
 
     Args:
@@ -149,8 +153,10 @@ def numeric_to_thresholded_attribute(
         thresholded_attribute (np.ndarray): Thresholded attribute values.
     """
 
-    thresholded_attribute = [numeric_to_thresholded_value(numeric_value, threshold)
-                             for numeric_value in numeric_attribute]
+    thresholded_attribute = [
+        numeric_to_thresholded_value(numeric_value, threshold)
+        for numeric_value in numeric_attribute
+    ]
 
     thresholded_attribute = np.array(thresholded_attribute).reshape(-1, 1)
 
@@ -158,7 +164,8 @@ def numeric_to_thresholded_attribute(
 
 
 def get_best_threshold(
-        numeric_attribute: np.ndarray, y: np.ndarray, split_criterion: str) -> float:
+    numeric_attribute: np.ndarray, y: np.ndarray, split_criterion: str
+) -> float:
     """Find best threshold for numeric attribute.
 
     Args:
@@ -180,16 +187,24 @@ def get_best_threshold(
 
     # pick threshold that maximises criterion of interest
     if split_criterion == "information_gain":
-        information_gains = [information_gain(numeric_to_thresholded_attribute(numeric_attribute, threshold), y, 0)
-                             for threshold in thresholds]
+        information_gains = [
+            information_gain(
+                numeric_to_thresholded_attribute(numeric_attribute, threshold), y, 0
+            )
+            for threshold in thresholds
+        ]
 
         best_threshold = thresholds[np.argmax(information_gains)]
 
         return best_threshold
 
     if split_criterion == "gini":
-        gini_splits = [gini_split(numeric_to_thresholded_attribute(numeric_attribute, threshold), y, 0)
-                       for threshold in thresholds]
+        gini_splits = [
+            gini_split(
+                numeric_to_thresholded_attribute(numeric_attribute, threshold), y, 0
+            )
+            for threshold in thresholds
+        ]
 
         best_threshold = thresholds[np.argmin(gini_splits)]
 
@@ -198,9 +213,14 @@ def get_best_threshold(
     else:
         raise ValueError("split_criterion must be 'information_gain' or 'gini'")
 
+
 def get_X_with_thresholded_attributes(
-        X: np.ndarray, y: np.ndarray, testable_attributes: list[int],
-        split_criterion: str, attribute_types: list[str]) -> tuple[np.ndarray, list[float | None]]:
+    X: np.ndarray,
+    y: np.ndarray,
+    testable_attributes: list[int],
+    split_criterion: str,
+    attribute_types: list[str],
+) -> tuple[np.ndarray, list[float | None]]:
     """Convert numeric attributes to thresholded attributes.
 
     Args:
@@ -214,7 +234,7 @@ def get_X_with_thresholded_attributes(
         X_with_thresholded_attributes (np.ndarray): Numeric attributes thresholded. Categorical attributes unchanged.
         thresholds (list): Best threshold for each numeric attribute, and None for other attributes.
     """
-    
+
     X_with_thresholded_attributes = X.copy().astype(object)
     thresholds = [None] * X.shape[1]
 
@@ -222,18 +242,25 @@ def get_X_with_thresholded_attributes(
         if attribute_types[attribute] == "numeric":
             numeric_attribute = X[:, attribute].astype(float)
 
-            threshold = get_best_threshold(numeric_attribute,y,split_criterion)
+            threshold = get_best_threshold(numeric_attribute, y, split_criterion)
 
-            thresholded_attribute = numeric_to_thresholded_attribute(numeric_attribute,threshold)
+            thresholded_attribute = numeric_to_thresholded_attribute(
+                numeric_attribute, threshold
+            )
 
             X_with_thresholded_attributes[:, attribute] = thresholded_attribute[:, 0]
             thresholds[attribute] = threshold
 
     return X_with_thresholded_attributes, thresholds
 
+
 def get_best_categorical_or_numerical_attribute(
-        X: np.ndarray, y: np.ndarray, testable_attributes: list[int],
-        split_criterion: str, attribute_types: list[str]) -> tuple[int, float | None, float]:
+    X: np.ndarray,
+    y: np.ndarray,
+    testable_attributes: list[int],
+    split_criterion: str,
+    attribute_types: list[str],
+) -> tuple[int, float | None, float]:
     """Find best categorical or numeric attribute for splitting data.
 
     Args:
@@ -248,13 +275,14 @@ def get_best_categorical_or_numerical_attribute(
         threshold (float): Best threshold if best attribute is numeric, otherwise None.
         best_split_quality_score (float): Split quality score of best attribute.
     """
-    
-    X_with_thresholded_attributes, thresholds = (
-        get_X_with_thresholded_attributes(X,y,testable_attributes,
-                                          split_criterion,attribute_types))
+
+    X_with_thresholded_attributes, thresholds = get_X_with_thresholded_attributes(
+        X, y, testable_attributes, split_criterion, attribute_types
+    )
 
     best_attribute, best_split_quality_score = get_best_categorical_attribute(
-        X_with_thresholded_attributes,y,testable_attributes,split_criterion)
+        X_with_thresholded_attributes, y, testable_attributes, split_criterion
+    )
 
     threshold = thresholds[best_attribute]
 
@@ -262,8 +290,11 @@ def get_best_categorical_or_numerical_attribute(
 
 
 def get_X_with_thresholded_best_attribute(
-        X: np.ndarray, best_attribute: int, best_attribute_type: str,
-        threshold: float | None) -> np.ndarray:
+    X: np.ndarray,
+    best_attribute: int,
+    best_attribute_type: str,
+    threshold: float | None,
+) -> np.ndarray:
     """Convert best attribute to thresholded attribute.
 
     Args:
@@ -281,8 +312,11 @@ def get_X_with_thresholded_best_attribute(
     if best_attribute_type == "numeric":
         X_with_thresholded_best_attribute = X.copy().astype(object)
         thresholded_attribute = numeric_to_thresholded_attribute(
-            X[:, best_attribute].astype(float),threshold)
-        X_with_thresholded_best_attribute[:, best_attribute] = thresholded_attribute[:, 0]
+            X[:, best_attribute].astype(float), threshold
+        )
+        X_with_thresholded_best_attribute[:, best_attribute] = thresholded_attribute[
+            :, 0
+        ]
 
     return X_with_thresholded_best_attribute
 
@@ -311,9 +345,14 @@ class leaf_node:
 class decision_node:
     """Internal node that routes examples to child subtrees."""
 
-    def __init__(self, best_attribute: int, best_attribute_name: str,
-                 best_attribute_type: str, threshold: float | None,
-                 majority_class: object) -> None:
+    def __init__(
+        self,
+        best_attribute: int,
+        best_attribute_name: str,
+        best_attribute_type: str,
+        threshold: float | None,
+        majority_class: object,
+    ) -> None:
         self.best_attribute = best_attribute
         self.best_attribute_name = best_attribute_name
         self.best_attribute_type = best_attribute_type
@@ -338,7 +377,8 @@ class decision_node:
             and self.best_attribute_type == other.best_attribute_type
             and self.threshold == other.threshold
             and self.majority_class == other.majority_class
-            and self.edges == other.edges)
+            and self.edges == other.edges
+        )
 
     def predict(self, X_i: np.ndarray) -> object:
         """Route one feature vector to a child subtree or fallback label.
@@ -351,8 +391,8 @@ class decision_node:
         """
         if self.best_attribute_type == "numeric":
             value = numeric_to_thresholded_value(
-                X_i[self.best_attribute],
-                self.threshold)
+                X_i[self.best_attribute], self.threshold
+            )
 
         if self.best_attribute_type == "categorical":
             value = X_i[self.best_attribute]
@@ -367,14 +407,15 @@ class decision_tree_classifier:
     """Train a decision tree using categorical or numeric attributes."""
 
     def __init__(
-            self,
-            split_criterion: str,
-            majority_class_threshold: float,
-            minimum_size_for_split: int,
-            minimum_split_quality_score: float,
-            maximum_depth: int | None,
-            random_attribute_selection: bool,
-            random_seed: int) -> None:
+        self,
+        split_criterion: str,
+        majority_class_threshold: float,
+        minimum_size_for_split: int,
+        minimum_split_quality_score: float,
+        maximum_depth: int | None,
+        random_attribute_selection: bool,
+        random_seed: int,
+    ) -> None:
         self.split_criterion = split_criterion
         self.majority_class_threshold = majority_class_threshold
         self.minimum_size_for_split = minimum_size_for_split
@@ -387,8 +428,12 @@ class decision_tree_classifier:
         self.root = None
 
     def fit(
-            self, X: np.ndarray, y: np.ndarray, attribute_names: list[str],
-            attribute_types: list[str]) -> decision_tree_classifier:
+        self,
+        X: np.ndarray,
+        y: np.ndarray,
+        attribute_names: list[str],
+        attribute_types: list[str],
+    ) -> decision_tree_classifier:
         """Fit the decision tree classifier.
 
         Args:
@@ -405,7 +450,8 @@ class decision_tree_classifier:
 
         testable_attributes = list(range(X.shape[1]))
         self.root = self._decision_tree(
-            X=X, y=y, testable_attributes=testable_attributes, depth=0)
+            X=X, y=y, testable_attributes=testable_attributes, depth=0
+        )
 
         return self
 
@@ -440,8 +486,8 @@ class decision_tree_classifier:
         return np.array(predictions)
 
     def _decision_tree(
-            self, X: np.ndarray, y: np.ndarray, testable_attributes: list[int],
-            depth: int) -> leaf_node | decision_node:
+        self, X: np.ndarray, y: np.ndarray, testable_attributes: list[int], depth: int
+    ) -> leaf_node | decision_node:
         """Recursively build a subtree from a training partition.
 
         Args:
@@ -460,7 +506,7 @@ class decision_tree_classifier:
         majority_class = classes[np.argmax(class_counts)]
         majority_class_proportion = np.max(class_counts) / len(y)
 
-       ###### stopping criteria ###### 
+        ###### stopping criteria ######
 
         # if enough instances in dataset belong to the majority class
         if majority_class_proportion >= self.majority_class_threshold:
@@ -486,35 +532,45 @@ class decision_tree_classifier:
             node = leaf_node(label=majority_class)
             return node
 
-        ###### randomly select testable attributes ###### 
+        ###### randomly select testable attributes ######
 
         if self.random_attribute_selection:
             # m = sqrt(total attributes)
             m = int(np.ceil(np.sqrt(X.shape[1])))
             # randomly select m testable attributes from the complete set of attributes
-            testable_attributes = self.random_generator.choice(list(range(X.shape[1])),
-                                                               size=m,
-                                                               replace=False).tolist()
+            testable_attributes = self.random_generator.choice(
+                list(range(X.shape[1])), size=m, replace=False
+            ).tolist()
 
         ###### find best attribute ######
 
         # find best attribute to split dataset, among testable attributes
-        best_attribute, threshold, best_split_quality_score = get_best_categorical_or_numerical_attribute(
-            X,y,testable_attributes,split_criterion=self.split_criterion,attribute_types=self.attribute_types)
+        best_attribute, threshold, best_split_quality_score = (
+            get_best_categorical_or_numerical_attribute(
+                X,
+                y,
+                testable_attributes,
+                split_criterion=self.split_criterion,
+                attribute_types=self.attribute_types,
+            )
+        )
 
-        ###### stopping criteria ###### 
+        ###### stopping criteria ######
 
         if best_split_quality_score <= self.minimum_split_quality_score:
             node = leaf_node(label=majority_class)
             return node
 
-        ###### remove best attribute from testable attributes ###### 
+        ###### remove best attribute from testable attributes ######
 
         if not self.random_attribute_selection:
-            testable_attributes = [attribute for attribute in testable_attributes
-                                   if attribute != best_attribute]
+            testable_attributes = [
+                attribute
+                for attribute in testable_attributes
+                if attribute != best_attribute
+            ]
 
-        ###### split dataset using best attribute ###### 
+        ###### split dataset using best attribute ######
 
         # define node as decision node that tests best attribute
         node = decision_node(
@@ -522,18 +578,21 @@ class decision_tree_classifier:
             best_attribute_name=self.attribute_names[best_attribute],
             best_attribute_type=self.attribute_types[best_attribute],
             threshold=threshold,
-            majority_class=majority_class)
-        
+            majority_class=majority_class,
+        )
+
         # best attribute is thresholded if it is numeric
         X_with_thresholded_best_attribute = get_X_with_thresholded_best_attribute(
             X=X,
             best_attribute=best_attribute,
             best_attribute_type=self.attribute_types[best_attribute],
-            threshold=threshold)
+            threshold=threshold,
+        )
 
         # values of the best attribute
         best_attribute_values = np.unique(
-            X_with_thresholded_best_attribute[:, best_attribute])
+            X_with_thresholded_best_attribute[:, best_attribute]
+        )
 
         for value in best_attribute_values:
             # partition of dataset D with best attribute corresponding to value
@@ -551,9 +610,10 @@ class decision_tree_classifier:
                     X=X_partition,
                     y=y_partition,
                     testable_attributes=testable_attributes,
-                    depth=depth + 1)
+                    depth=depth + 1,
+                )
 
-            # create edge from node to root of subtree, labeling edge with attribute value
+                # create edge from node to root of subtree, labeling edge with attribute value
                 node._add_edge(label=value, subtree=subtree)
 
         return node

@@ -8,7 +8,9 @@ from typing import Any
 import numpy as np
 
 
-def _euclidean_distance(first_instance: np.ndarray, second_instance: np.ndarray) -> float:
+def _euclidean_distance(
+    first_instance: np.ndarray, second_instance: np.ndarray
+) -> float:
     """Compute Euclidean distance between two feature vectors.
 
     Args:
@@ -78,5 +80,7 @@ class KNN_classifier:
         Returns:
             Array of predicted labels, one per row of ``X``.
         """
-        predictions = np.array([self._predict_single_instance(instance) for instance in X])
+        predictions = np.array(
+            [self._predict_single_instance(instance) for instance in X]
+        )
         return predictions

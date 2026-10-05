@@ -17,7 +17,9 @@ def format_vector(values: np.ndarray) -> str:
     return "  ".join(f"{value:.5f}" for value in values)
 
 
-def print_initial_network(thetas: list[np.ndarray], regularization_strength: float) -> None:
+def print_initial_network(
+    thetas: list[np.ndarray], regularization_strength: float
+) -> None:
     """Print network shape, regularization, and initial weights.
 
     Args:
@@ -29,13 +31,19 @@ def print_initial_network(thetas: list[np.ndarray], regularization_strength: flo
     for theta in thetas:
         num_neurons_per_layer.append(theta.shape[0])
 
-    num_neurons_per_layer_text = " ".join(str(num_neurons) for num_neurons in num_neurons_per_layer)
+    num_neurons_per_layer_text = " ".join(
+        str(num_neurons) for num_neurons in num_neurons_per_layer
+    )
 
     print(f"Regularization parameter lambda={regularization_strength:.3f}\n")
-    print(f"Initializing the network with the following structure (number of neurons per layer): [{num_neurons_per_layer_text}]\n")
+    print(
+        f"Initializing the network with the following structure (number of neurons per layer): [{num_neurons_per_layer_text}]\n"
+    )
 
     for theta_number, theta in enumerate(thetas, start=1):
-        print(f"Initial Theta{theta_number} (the weights of each neuron, including the bias weight, are stored in the rows):")
+        print(
+            f"Initial Theta{theta_number} (the weights of each neuron, including the bias weight, are stored in the rows):"
+        )
 
         for row in theta:
             print(f"\t{format_vector(row)}  ")
@@ -89,10 +97,14 @@ def print_cost_section_header() -> None:
 
 
 def print_forward_propagation_output(
-        instance_number: int, x: np.ndarray, y: np.ndarray,
-        layers_preactivations: list[np.ndarray],
-        layers_activations: list[np.ndarray], y_pred: np.ndarray,
-        cost: float) -> None:
+    instance_number: int,
+    x: np.ndarray,
+    y: np.ndarray,
+    layers_preactivations: list[np.ndarray],
+    layers_activations: list[np.ndarray],
+    y_pred: np.ndarray,
+    cost: float,
+) -> None:
     """Print forward-propagation values for one training instance.
 
     Args:
@@ -115,7 +127,9 @@ def print_forward_propagation_output(
         print(f"\t\ta{layer_number}: [{format_vector(activation)}]\n")
 
     print(f"\t\tf(x): [{format_vector(y_pred)}]")
-    print(f"\tPredicted output for instance {instance_number}: [{format_vector(y_pred)}]")
+    print(
+        f"\tPredicted output for instance {instance_number}: [{format_vector(y_pred)}]"
+    )
     print(f"\tExpected output for instance {instance_number}: [{format_vector(y)}]")
     print(f"\tCost, J, associated with instance {instance_number}: {cost:.3f}\n")
 
@@ -126,7 +140,9 @@ def print_final_cost(final_cost: float) -> None:
     Args:
         final_cost: Regularized cost after processing the training set.
     """
-    print(f"Final (regularized) cost, J, based on the complete training set: {final_cost:.5f}\n")
+    print(
+        f"Final (regularized) cost, J, based on the complete training set: {final_cost:.5f}\n"
+    )
 
 
 def print_backpropagation_section_header() -> None:
@@ -136,8 +152,8 @@ def print_backpropagation_section_header() -> None:
 
 
 def print_backpropagation_output(
-        instance_number: int, deltas: list[np.ndarray],
-        gradients: list[np.ndarray]) -> None:
+    instance_number: int, deltas: list[np.ndarray], gradients: list[np.ndarray]
+) -> None:
     """Print deltas and gradients for one training instance.
 
     Args:
@@ -153,7 +169,9 @@ def print_backpropagation_output(
     print()
 
     for theta_number, gradient in reversed(list(enumerate(gradients, start=1))):
-        print(f"\t\tGradients of Theta{theta_number} based on training instance {instance_number}:")
+        print(
+            f"\t\tGradients of Theta{theta_number} based on training instance {instance_number}:"
+        )
 
         for row in gradient:
             print(f"\t\t\t{format_vector(row)}  ")
@@ -167,7 +185,9 @@ def print_final_gradients(final_gradients: list[np.ndarray]) -> None:
     Args:
         final_gradients: Final gradient matrix for each network layer.
     """
-    print("\tThe entire training set has been processed. Computing the average (regularized) gradients:")
+    print(
+        "\tThe entire training set has been processed. Computing the average (regularized) gradients:"
+    )
 
     for theta_number, final_gradient in enumerate(final_gradients, start=1):
         print(f"\t\tFinal regularized gradients of Theta{theta_number}:")
