@@ -1,33 +1,34 @@
 # Machine Learning From Scratch
 
-Machine-learning algorithms developed across HW1–HW4, with the improved Decision Tree, Random Forest, and Neural Network versions from `ML_Algorithm_Compare` selected as the current implementations.
+This repository is a compact, educational implementation of several machine-learning algorithms. The code is intended to make the main modeling ideas visible: how each algorithm represents a decision, what assumptions it makes about data, and how those assumptions affect its behavior.
 
-## Included algorithms
+## Algorithms and inductive bias
 
-- **KNN:** original HW1 implementation
-- **Decision Tree:** improved implementation with configurable maximum depth
-- **Multinomial Naive Bayes:** original HW2 implementation
-- **Random Forest:** improved implementation with configurable maximum depth
-- **Neural Network:** improved implementation with multiclass labels and metrics
+An algorithm's **inductive bias** is the set of assumptions it uses to generalize beyond the examples it has seen. The algorithms in this repository make different assumptions, so comparing them is useful even when they are trained on the same data.
 
-Decision Tree, Random Forest, and Neural Network are copied from `ML_Algorithm_Compare/src/shared/algorithms/`. KNN and Multinomial Naive Bayes are copied from their original homework implementations.
+### K-nearest neighbors
 
-## Project layout
+KNN predicts a new example from the labels of nearby training examples. Its inductive bias is local smoothness: points that are close in feature space are expected to have similar labels. The choice of `k` controls the amount of smoothing. A small `k` can preserve local structure but is sensitive to noise; a large `k` produces a smoother, more biased decision boundary. Because distance is central to the method, numeric features should usually be standardized first.
 
-```text
-algorithms/              one current implementation per algorithm
-docs/guides/             setup, coding, testing, tooling, and CI guides
-```
+### Decision tree
 
-## Setup
+A decision tree recursively divides the feature space with threshold-based questions. Its inductive bias is that useful class structure can be represented by a sequence of axis-aligned partitions. Trees can capture nonlinear relationships and do not require feature scaling, but unrestricted depth can make them fit noise. Limiting the maximum depth makes the bias–variance trade-off explicit: shallow trees are simpler, while deeper trees represent more detailed decision regions.
 
-The algorithm files retain their original coursework interfaces. Consult the original homework requirements and `ML_Algorithm_Compare/requirements.txt` when running experiments.
+### Random forest
 
-See [`docs/guides/`](docs/guides/) for the project’s development and contribution guides.
+A random forest combines many decision trees trained with data and feature randomness. It retains the tree's partition-based bias while reducing the variance of any one tree through aggregation and majority voting. More trees generally make predictions more stable, and limiting tree depth provides another way to control model complexity. The model is often effective when the data contains nonlinearities and feature interactions.
 
-## Parkinson's demonstration
+### Multinomial naive Bayes
 
-The demonstration uses a small, deterministic Parkinson’s train/test split so that the notebook remains quick to run while still producing the final-project-style figures:
+Multinomial naive Bayes is designed for count-based features such as word or token frequencies. Its inductive bias is that feature counts provide class evidence and are conditionally independent given the class. This strong assumption makes the model fast and interpretable for text classification, even when the features are not truly independent. It is not used in the Parkinson's demonstration because that dataset contains continuous biomedical measurements rather than token counts.
+
+### Neural network
+
+A feed-forward neural network represents a prediction as a composition of learned linear transformations and nonlinear activation functions. Its inductive bias is flexible: the target is assumed to be expressible through distributed combinations of features rather than only local neighborhoods or explicit threshold rules. This flexibility allows the network to model complex interactions, but optimization, initialization, architecture, and regularization have a larger effect on its behavior. Training and test histories help reveal whether learning is generalizing or overfitting.
+
+## Demonstration
+
+The repository includes a small, deterministic Parkinson's dataset split so the examples run quickly. The notebook demonstrates KNN, the decision tree, the random forest, and the neural network on the same train/test data:
 
 ```text
 demonstrations/parkinsons_demo.ipynb
@@ -37,22 +38,36 @@ results/parkinsons/
 figures/parkinsons/
 ```
 
-Open `demonstrations/parkinsons_demo.ipynb` from the repository root and run all cells. It produces parameter-performance plots for KNN, Decision Tree, and Random Forest, plus the three-panel Neural Network training-history figure.
+The notebook produces parameter-performance plots for KNN, the decision tree, and the random forest, together with a three-panel neural-network training-history figure. Open [`demonstrations/parkinsons_demo.ipynb`](demonstrations/parkinsons_demo.ipynb) from the repository root and run all cells.
 
-## Inductive bias discussion
+## Project layout
 
-The final-project comparison emphasizes that model performance depends on the assumptions each algorithm makes about the data. KNN is a non-parametric, distance-based baseline: it assumes that observations with the same label are close in feature space. This is why the notebook standardizes the numeric attributes before distance computation. A small `k` preserves local structure but is sensitive to noise, while a larger `k` smooths the decision boundary and may underfit.
+```text
+algorithms/              algorithm implementations
+demonstrations/          runnable Jupyter demonstrations
+data/                    demonstration datasets and fixed splits
+figures/                 generated plots
+results/                 generated metrics and training histories
+docs/guides/             setup, coding, testing, tooling, and CI guides
+tests/                   automated tests
+```
 
-The Decision Tree assumes that labels can be predicted by recursively partitioning the feature space using feature thresholds. This creates piecewise, box-like decision regions and naturally captures nonlinear interactions without feature scaling. The improved `maximum_depth` parameter makes the bias–variance trade-off explicit: shallow trees have more bias and less variance, while deeper trees can fit more complex structure but may overfit.
+## Setup
 
-Random Forest keeps the tree-based partitioning bias but reduces the variance of an individual tree through bootstrap samples, random feature selection, and majority voting. Increasing the number of trees usually stabilizes the estimate, although it increases training time. The improved forest also passes a maximum depth to each tree, providing an additional regularization control.
+Install the runtime dependencies with:
 
-The Neural Network is a flexible parametric model that assumes the target can be represented by compositions of smooth nonlinear transformations. It can learn distributed feature interactions that are difficult to express as local neighborhoods or a short sequence of thresholds, but it has higher variance and depends more strongly on initialization, optimization, architecture, and regularization. The learning-history plot helps show whether improvements on the training set also transfer to the test set.
+```bash
+python -m pip install -r requirements.txt
+```
 
-Multinomial Naive Bayes is intentionally not used in the Parkinson’s notebook. Its inductive bias is that token counts provide class evidence and are conditionally independent given the class, which is appropriate for text but not for continuous biomedical measurements.
+For development and testing, install:
 
-## Origin
+```bash
+python -m pip install -r requirements-dev.txt
+```
 
-The code was developed as part of machine-learning coursework covering supervised learning, text classification, ensemble methods, and neural networks.
+See [`docs/guides/`](docs/guides/) for development, testing, tooling, and contribution guidance.
 
-See [`docs/guides/`](docs/guides/) for the project’s development and contribution guides.
+## Continuous integration
+
+GitHub Actions runs the project checks on pushes and pull requests. The workflow checks formatting and linting, runs type checks, validates the notebook file, and runs the automated tests.
