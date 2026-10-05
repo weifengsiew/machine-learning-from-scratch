@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 import numpy as np
 
 from .decision_tree import decision_tree_classifier
@@ -67,7 +65,7 @@ class random_forest_classifier:
         y: np.ndarray,
         attribute_names: list[str],
         attribute_types: list[str],
-    ) -> "random_forest_classifier":
+    ) -> random_forest_classifier:
         """Fit randomized decision trees on bootstrap samples.
 
         Args:

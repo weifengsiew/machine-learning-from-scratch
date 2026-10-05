@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
+
 def entropy(y: np.ndarray) -> float:
     """Compute entropy.
 
@@ -13,7 +14,7 @@ def entropy(y: np.ndarray) -> float:
     Returns:
         entropy (float): Entropy of class labels.
     """
-    classes, class_counts = np.unique(y, return_counts=True)
+    _classes, class_counts = np.unique(y, return_counts=True)
     class_probabilities = class_counts / len(y)
 
     return -np.sum(class_probabilities * np.log2(class_probabilities))
@@ -53,7 +54,7 @@ def gini(y: np.ndarray) -> float:
     Returns:
         gini (float): Gini impurity of class labels.
     """
-    classes, class_counts = np.unique(y, return_counts=True)
+    _classes, class_counts = np.unique(y, return_counts=True)
     class_probabilities = class_counts / len(y)
 
     return 1 - np.sum(class_probabilities ** 2)
@@ -387,7 +388,7 @@ class decision_tree_classifier:
 
     def fit(
             self, X: np.ndarray, y: np.ndarray, attribute_names: list[str],
-            attribute_types: list[str]) -> "decision_tree_classifier":
+            attribute_types: list[str]) -> decision_tree_classifier:
         """Fit the decision tree classifier.
 
         Args:

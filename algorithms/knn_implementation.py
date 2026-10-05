@@ -35,7 +35,7 @@ class KNN_classifier:
         self.X_train: np.ndarray | None = None
         self.y_train: np.ndarray | None = None
 
-    def fit(self, X_train: np.ndarray, y_train: np.ndarray) -> "KNN_classifier":
+    def fit(self, X_train: np.ndarray, y_train: np.ndarray) -> KNN_classifier:
         """Store training examples for neighbor lookup.
 
         Args:

@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import numpy as np
 from typing import Any
+
+import numpy as np
 
 
 def sigmoid(preactivation: np.ndarray) -> np.ndarray:
@@ -170,7 +171,7 @@ def regularize_and_average_cost(
 
 
 def compute_average_regularized_cost_over_instances(
-        network: "NeuralNetwork", X: np.ndarray, y: np.ndarray,
+        network: NeuralNetwork, X: np.ndarray, y: np.ndarray,
         regularization_strength: float) -> float:
     """Compute average L2-regularized binary cross-entropy loss over instances.
 
@@ -264,7 +265,7 @@ def compute_multiclass_classification_metrics(
 
 
 def compute_metrics_over_instances(
-        network: "NeuralNetwork", X: np.ndarray, y: np.ndarray) -> tuple[float, float]:
+        network: NeuralNetwork, X: np.ndarray, y: np.ndarray) -> tuple[float, float]:
     """Compute classification metrics over instances.
 
     Args:

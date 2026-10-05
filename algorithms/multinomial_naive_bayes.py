@@ -150,7 +150,7 @@ class multinomial_naive_bayes_classifier:
 
     def fit(
         self, X_train: list[Document], y_train: list[Label], vocab: list[str]
-    ) -> "multinomial_naive_bayes_classifier":
+    ) -> multinomial_naive_bayes_classifier:
         """Estimate class priors and smoothed word probabilities.
 
         Args:
