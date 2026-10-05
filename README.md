@@ -46,7 +46,19 @@ but they need not have the simple shape produced by a single tree.
 
 ### Multinomial naive Bayes
 
-Multinomial naive Bayes is designed for count-based features such as word or token frequencies. Its inductive bias is that feature counts provide class evidence and are conditionally independent given the class. This strong assumption makes the model fast and interpretable for text classification, even when the features are not truly independent. It is not used in the Parkinson's demonstration because that dataset contains continuous biomedical measurements rather than token counts.
+Multinomial Naive Bayes is designed for count-based features, such as word frequencies in a document. Its inductive bias is that word counts provide 
+evidence for a class and are conditionally independent given that class. For example, seeing “urgent” can count as evidence that an email is work-related. 
+Independence means the model treats this evidence separately from evidence from other words: it approximates the probability of seeing both “urgent” and
+"meeting” in a work email as
+
+$$
+P(\text{“urgent” and “meeting”} \mid \text{work})
+\approx
+P(\text{“urgent”} \mid \text{work}) \, P(\text{“meeting”} \mid \text{work}).
+$$
+
+The words may actually be related, but this simplifying assumption makes the model fast and easy to interpret, and it can work well for text classification. 
+It is less suitable for continuous-valued measurements, which are not naturally represented as counts.
 
 ### Neural network
 
