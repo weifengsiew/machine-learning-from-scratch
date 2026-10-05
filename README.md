@@ -44,6 +44,10 @@ different partitions of the feature space. The forest combines their predictions
 regions—for example, several separate regions or a step-like boundary that approximates a curve. These regions are still built from axis-aligned splits, 
 but they need not have the simple shape produced by a single tree.
 
+The ntree parameter sets how many trees vote in the forest. With few trees, random differences between trees can sway the majority vote and lead to 
+incorrect predictions. Adding trees usually makes the vote more reliable and can improve prediction accuracy, but the benefit tends to level off. More 
+trees do not guarantee correct predictions, especially if the trees make similar errors.
+
 ### Multinomial naive Bayes
 
 Multinomial Naive Bayes is designed for count-based features, such as word frequencies in a document. Its inductive bias is that word counts provide 
