@@ -24,7 +24,15 @@ Standardizing numeric features puts them on comparable scales, so differences in
 
 ### Decision tree
 
-A decision tree recursively divides the feature space with threshold-based questions. Its inductive bias is that useful class structure can be represented by a sequence of axis-aligned partitions. Trees can capture nonlinear relationships and do not require feature scaling, but unrestricted depth can make them fit noise. Limiting the maximum depth makes the bias–variance trade-off explicit: shallow trees are simpler, while deeper trees represent more detailed decision regions.
+A decision tree’s inductive bias is the assumption that class structure can be learned by repeatedly partitioning the feature space into regions
+, using one feature at a time. This creates rectangular regions of the feature space, with a predicted class assigned to instances in each region. 
+The tree can model nonlinear patterns without scaling features, but it tends to favor patterns that can be described with axis-aligned splits
+(e.g. "is age <= 30 or > 30). 
+
+Limiting a tree’s depth limits how many times the feature space can be partitioned. A shallow tree makes only a few partitions, so its decision 
+regions stay simple; this can miss real patterns in the data. A deeper tree can add more partitions to capture more detailed patterns, but may also 
+learn quirks or noise specific to the training data. Choosing a depth balances these effects: too little depth can underfit, while too much can overfit.
+
 
 ### Random forest
 
