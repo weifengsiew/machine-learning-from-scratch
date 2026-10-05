@@ -65,19 +65,12 @@ optimization, and regularization. Comparing training and test performance over t
 
 ## Demonstration
 
-The repository includes a small, deterministic Parkinson's dataset split so the examples run quickly. The notebook demonstrates KNN, the decision tree, the random forest, and the neural network on the same train/test data:
+The repository includes a small, deterministic Parkinson’s dataset for quick demos. Run all cells in parkinsons_demo.ipynb from the repository root to compare KNN, 
+decision tree, random forest, and neural network on the same train/test split. The notebook saves parameter-performance plots and a three-panel neural-network training-history 
+figure to results/parkinsons/ and figures/parkinsons/. The data is in data/parkinsons_train.csv and data/parkinsons_test.csv.
 
-```text
-parkinsons_demo.ipynb
-data/parkinsons_train.csv
-data/parkinsons_test.csv
-results/parkinsons/
-figures/parkinsons/
-```
-
-The notebook produces parameter-performance plots for KNN, the decision tree, and the random forest, together with a three-panel neural-network training-history figure. Open [`parkinsons_demo.ipynb`](parkinsons_demo.ipynb) from the repository root and run all cells.
-
-For the text-specific model, open [`naive_bayes_demo.ipynb`](naive_bayes_demo.ipynb). It uses a compact subset of real labeled music reviews to show tokenization, bag-of-words probabilities, class priors, additive smoothing, and an `alpha` performance sweep.
+For a text-classification demo, open naive_bayes_demo.ipynb⁠￼. It uses a compact set of labeled music reviews to demonstrate Multinomial Naive Bayes, including tokenization,
+bag-of-words probabilities, class priors, additive smoothing, and an alpha performance sweep.
 
 ## Project layout
 
