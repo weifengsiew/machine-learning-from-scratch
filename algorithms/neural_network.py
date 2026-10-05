@@ -101,20 +101,6 @@ def compute_gradients(
     return gradients
 
 
-def accumulate_cost(total_cost: float, cost: float) -> float:
-    """Add cost from one training instance to total cost.
-
-    Args:
-        total_cost (float): Sum of costs across training instances processed so far.
-        cost (float): Cost associated with one training instance.
-
-    Returns:
-        total_cost (float): Sum of costs after adding cost from the current training instance.
-    """
-    total_cost += cost
-    return total_cost
-
-
 def accumulate_gradients(
     gradient_totals: list[np.ndarray], gradients: list[np.ndarray]
 ) -> list[np.ndarray]:
@@ -204,7 +190,7 @@ def compute_average_regularized_cost_over_instances(
     for x_i, y_i in zip(X, y):
         _, _, y_pred_i = network._forward_propagate(x_i)
         cost = compute_cost(y_pred_i, y_i)
-        total_cost = accumulate_cost(total_cost, cost)
+        total_cost += cost
 
     cost = regularize_and_average_cost(
         network.thetas, total_cost, regularization_strength, len(X)
@@ -647,7 +633,6 @@ class NeuralNetwork:
         batch_size: int,
         random_seed: int,
         shuffle: bool,
-        verbose: bool,
         record_history: bool,
         X_test: np.ndarray | None = None,
         y_test: np.ndarray | None = None,
@@ -661,7 +646,6 @@ class NeuralNetwork:
             batch_size (int): Number of training instances used for each weight update.
             random_seed (int): Random seed for reproducibility.
             shuffle (bool): Whether to shuffle training instances before creating batches.
-            verbose (bool): Whether to print intermediate values during fitting.
             record_history (bool): Whether to record metrics after each weight update.
             X_test (list): Input values for test instances.
             y_test (list): True class labels for test instances.
@@ -670,11 +654,6 @@ class NeuralNetwork:
             history (dict or None): Training and testing cost, accuracy, and F1 across weight updates.
                 Returns None when record_history is False.
         """
-        if verbose and batch_size != len(X_train):
-            raise ValueError(
-                "verbose=True currently supports only full-batch gradient descent"
-            )
-
         X_train = np.array(X_train)
         X_test = None if X_test is None else np.array(X_test)
         y_train, y_test, y_train_for_metrics, y_test_for_metrics = (
@@ -698,12 +677,6 @@ class NeuralNetwork:
                 "test_f1": [],
             }
 
-        if verbose:
-            from . import printers
-
-            printers.print_initial_network(self.thetas, self.regularization_strength)
-            printers.print_training_set(X_train, y_train)
-
         random_generator = np.random.default_rng(random_seed)
         update_number = 0
         train_instances_seen = 0
@@ -713,23 +686,11 @@ class NeuralNetwork:
                 X_train, y_train, batch_size, shuffle, random_generator
             )
 
-            if verbose:
-                backpropagation_outputs = []
-                printers.print_iteration_header(iteration + 1)
-                printers.print_cost_section_header()
-
             for batch_number, (X_batch, y_batch) in enumerate(batches, start=1):
-                total_cost = 0.0
                 gradient_totals = [np.zeros_like(theta) for theta in self.thetas]
 
-                for instance_number, (x_i, y_i) in enumerate(
-                    zip(X_batch, y_batch), start=1
-                ):
-                    layers_preactivations, layers_activations, y_pred_i = (
-                        self._forward_propagate(x_i)
-                    )
-                    cost = compute_cost(y_pred_i, y_i)
-                    total_cost = accumulate_cost(total_cost, cost)
+                for x_i, y_i in zip(X_batch, y_batch):
+                    _, layers_activations, y_pred_i = self._forward_propagate(x_i)
                     deltas = compute_deltas(
                         self.thetas, y_pred_i, y_i, layers_activations
                     )
@@ -737,41 +698,12 @@ class NeuralNetwork:
 
                     gradient_totals = accumulate_gradients(gradient_totals, gradients)
 
-                    if verbose:
-                        backpropagation_outputs.append(
-                            (instance_number, deltas, gradients)
-                        )
-                        printers.print_forward_propagation_output(
-                            instance_number,
-                            x_i,
-                            y_i,
-                            layers_preactivations,
-                            layers_activations,
-                            y_pred_i,
-                            cost,
-                        )
-
                 final_gradients = regularize_and_average_gradients(
                     self.thetas,
                     gradient_totals,
                     self.regularization_strength,
                     len(X_batch),
                 )
-                final_cost = regularize_and_average_cost(
-                    self.thetas, total_cost, self.regularization_strength, len(X_batch)
-                )
-
-                if verbose:
-                    printers.print_final_cost(final_cost)
-                    printers.print_backpropagation_section_header()
-
-                    for instance_number, deltas, gradients in backpropagation_outputs:
-                        printers.print_backpropagation_output(
-                            instance_number, deltas, gradients
-                        )
-
-                    printers.print_final_gradients(final_gradients)
-
                 self._update_weights(final_gradients, self.step_size)
 
                 update_number += 1
@@ -808,9 +740,6 @@ class NeuralNetwork:
                     history["test_cost"].append(test_cost)
                     history["test_accuracy"].append(test_accuracy)
                     history["test_f1"].append(test_f1)
-
-            if verbose:
-                printers.print_updated_thetas(self.thetas, iteration + 1)
 
         return history
 
