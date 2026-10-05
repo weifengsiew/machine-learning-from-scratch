@@ -9,7 +9,7 @@ Exact copies of the machine-learning source code developed across HW1–HW4. The
 - **HW3:** numeric/categorical decision trees and random forests
 - **HW4:** feed-forward neural networks with backpropagation
 
-The algorithm files are copied verbatim from the original homework folders. No algorithm source has been renamed, reformatted, or rewritten here.
+The `algorithms/HW1`–`algorithms/HW4` files are copied verbatim from the original homework folders. Enhanced versions from `ML_Algorithm_Compare` are kept separately under `algorithms/improved/`.
 
 ## Project layout
 
@@ -18,6 +18,7 @@ algorithms/HW1/          exact copy of HW1/src
 algorithms/HW2/          exact copy of HW2/src
 algorithms/HW3/          exact copy of HW3/src
 algorithms/HW4/          exact copy of HW4/src
+algorithms/improved/     enhanced decision tree, random forest, and neural network
 docs/guides/             setup, coding, testing, tooling, and CI guides
 ```
 

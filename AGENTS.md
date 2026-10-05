@@ -5,6 +5,7 @@
 - **Work incrementally:** follow [Implement–Test–Iterate](docs/guides/implement-test-iterate.md) for algorithm changes and bug fixes.
 - **Stay focused:** do not refactor unrelated code or add dependencies without a clear reason.
 - **Preserve exact source copies:** `algorithms/HW1` through `algorithms/HW4` are verbatim copies of the corresponding homework `src` directories. Do not rewrite, rename, reformat, or silently modernize those files.
+- **Separate improvements:** enhanced implementations belong under `algorithms/improved/` and should retain their improved behavior and source provenance.
 
 ## Definition of done
 
@@ -21,6 +22,7 @@ If a check fails because of pre-existing code or an unavailable local tool, do n
 ## Repository structure
 
 - `algorithms/HW1/` through `algorithms/HW4/` contain the exact extracted homework source files.
+- `algorithms/improved/` contains enhanced Decision Tree, Random Forest, and Neural Network implementations from `ML_Algorithm_Compare`.
 - `docs/guides/` contains coding, testing, tooling, and CI guidance.
 - `README.md` is the public project overview.
 
