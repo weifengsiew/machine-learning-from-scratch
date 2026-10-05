@@ -26,8 +26,8 @@ Standardizing numeric features puts them on comparable scales, so differences in
 
 A decision tree’s inductive bias is the assumption that class structure can be learned by repeatedly partitioning the feature space into regions
 , using one feature at a time. This creates rectangular regions of the feature space, with a predicted class assigned to instances in each region. 
-The tree can model nonlinear patterns without scaling features, but it tends to favor patterns that can be described with axis-aligned splits
-(e.g. "is age <= 30 or > 30). 
+The tree can model nonlinear patterns without scaling features, but it tends to favor patterns that can be described with axis-aligned splits. 
+Example, partitioning the feature spaace into teo regions "age <= 30 or > 30" along the age axis.
 
 Limiting a tree’s depth limits how many times the feature space can be partitioned. A shallow tree makes only a few partitions, so its decision 
 regions stay simple; this can miss real patterns in the data. A deeper tree can add more partitions to capture more detailed patterns, but may also 
