@@ -51,11 +51,7 @@ evidence for a class and are conditionally independent given that class. For exa
 Independence means the model treats this evidence separately from evidence from other words: it approximates the probability of seeing both “urgent” and
 "meeting” in a work email as
 
-$$
-P(\text{“urgent” and “meeting”} \mid \text{work})
-\approx
-P(\text{“urgent”} \mid \text{work}) \, P(\text{“meeting”} \mid \text{work}).
-$$
+P(urgent ∩ meeting | work) ≈ P(urgent | work) × P(meeting | work)
 
 The words may actually be related, but this simplifying assumption makes the model fast and easy to interpret, and it can work well for text classification. 
 It is less suitable for continuous-valued measurements, which are not naturally represented as counts.
