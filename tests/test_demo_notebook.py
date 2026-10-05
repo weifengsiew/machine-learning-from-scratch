@@ -11,6 +11,13 @@ def test_parkinsons_notebook_is_valid_json():
     assert notebook["cells"]
 
 
+def test_naive_bayes_notebook_is_valid_json():
+    notebook_path = Path("naive_bayes_demo.ipynb")
+    notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+    assert notebook["nbformat"] == 4
+    assert notebook["cells"]
+
+
 def test_parkinsons_split_is_small_and_reproducible():
     train = pd.read_csv("data/parkinsons_train.csv")
     test = pd.read_csv("data/parkinsons_test.csv")

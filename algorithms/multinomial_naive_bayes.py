@@ -2,7 +2,7 @@
 
 from collections import Counter
 import numpy as np
-from src.preprocessors import doc_to_bow_vector
+from .preprocessors import doc_to_bow_vector
 
 def compute_class_prior_probabilities(y, log_scale):
     """Compute prior probabilities for each document class

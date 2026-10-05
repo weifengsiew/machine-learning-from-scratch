@@ -40,11 +40,14 @@ figures/parkinsons/
 
 The notebook produces parameter-performance plots for KNN, the decision tree, and the random forest, together with a three-panel neural-network training-history figure. Open [`parkinsons_demo.ipynb`](parkinsons_demo.ipynb) from the repository root and run all cells.
 
+For the text-specific model, open [`naive_bayes_demo.ipynb`](naive_bayes_demo.ipynb). It uses a tiny tokenized sports-versus-politics dataset to show bag-of-words probabilities, class priors, additive smoothing, and an `alpha` performance sweep.
+
 ## Project layout
 
 ```text
 algorithms/              algorithm implementations
-parkinsons_demo.ipynb     runnable Jupyter demonstration
+parkinsons_demo.ipynb     numeric tabular-model demonstration
+naive_bayes_demo.ipynb    text-classification demonstration
 data/                    demonstration datasets and fixed splits
 figures/                 generated plots
 results/                 generated metrics and training histories
@@ -54,16 +57,10 @@ tests/                   automated tests
 
 ## Setup
 
-Install the runtime dependencies with:
+Install the project dependencies, including development and testing tools, with:
 
 ```bash
 python -m pip install -r requirements.txt
-```
-
-For development and testing, install:
-
-```bash
-python -m pip install -r requirements-dev.txt
 ```
 
 See [`docs/guides/`](docs/guides/) for development, testing, tooling, and contribution guidance.
