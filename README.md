@@ -87,7 +87,7 @@ training and test performance over time helps show whether the learned patterns 
 
 ## Demonstration
 
-The repository small Parkinson’s dataset for a quick demo. Run all cells in parkinsons_demo.ipynb from the repository root to compare KNN, 
+The repository contains a small Parkinson’s dataset for a quick demo. Run all cells in parkinsons_demo.ipynb from the repository root to compare KNN, 
 decision tree, random forest, and neural network on the same train/test split. The notebook saves parameter-performance plots and a three-panel
 neural-network training-history figure to results/parkinsons/ and figures/parkinsons/. The data is in data/parkinsons_train.csv and data/parkinsons_test.csv.
 
