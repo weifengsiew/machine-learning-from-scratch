@@ -36,7 +36,13 @@ learn quirks or noise specific to the training data. Choosing a depth balances t
 
 ### Random forest
 
+A random forest’s inductive bias builds on the decision tree’s: each tree repeatedly partitions the feature space using one feature at a time, creating 
+rectangular regions with a predicted class assigned to each. The forest combines the trees’ predictions by majority vote. 
 
+Because each tree is trained on a different random sample of the data and considers random subsets of features when making splits, the trees create 
+different partitions of the feature space. The forest combines their predictions through majority voting, allowing it to form more flexible class 
+regions—for example, several separate regions or a step-like boundary that approximates a curve. These regions are still built from axis-aligned splits, 
+but they need not have the simple shape produced by a single tree.
 
 ### Multinomial naive Bayes
 
