@@ -66,10 +66,22 @@ nonzero probability. A larger alpha smooths the probabilities more, making word 
 
 ### Neural network
 
-A feed-forward neural network makes predictions by passing inputs through layers of learned transformations and nonlinear activation functions. 
-Its inductive bias is relatively flexible: layers can combine information from many features to learn complex patterns and interactions, without requiring 
-explicit threshold rules or local relationships. This flexibility means the network’s behavior depends strongly on its architecture, initialization, 
-optimization, and regularization. Comparing training and test performance over time helps show whether it is learning patterns that generalize or beginning to overfit.
+A feed-forward neural network passes information through a sequence of layers. At a neuron receiving three inputs, it first forms a **linear combination**:
+
+`z = w1*x1 + w2*x2 + w3*x3 + b`
+
+Here, `x1`, `x2`, and `x3` are the inputs; `w1`, `w2`, and `w3` are learned weights that control each input’s contribution; and `b` is a learned bias. 
+The neuron then applies the sigmoid activation:
+
+`a = 1 / (1 + e^(-z))`
+
+This transforms `z` into an output `a` between 0 and 1, which is passed to the next layer. The sigmoid makes the transformation nonlinear. Without a nonlinear 
+activation, stacking layers would still amount to a single linear transformation.
+
+The network’s inductive bias is flexible: it assumes useful patterns can be learned by combining information from many features across layers, rather than relying on 
+explicit threshold rules or local neighborhoods. More hidden layers allow more successive transformations and can help represent complex patterns, but can also make 
+training harder and increase the risk of overfitting. The network’s behavior also depends on its width, initialization, optimization, and regularization. Comparing 
+training and test performance over time helps show whether the learned patterns generalize or the network is beginning to overfit.
 
 ## Demonstration
 
