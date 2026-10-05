@@ -31,20 +31,20 @@ A feed-forward neural network represents a prediction as a composition of learne
 The repository includes a small, deterministic Parkinson's dataset split so the examples run quickly. The notebook demonstrates KNN, the decision tree, the random forest, and the neural network on the same train/test data:
 
 ```text
-demonstrations/parkinsons_demo.ipynb
+parkinsons_demo.ipynb
 data/parkinsons_train.csv
 data/parkinsons_test.csv
 results/parkinsons/
 figures/parkinsons/
 ```
 
-The notebook produces parameter-performance plots for KNN, the decision tree, and the random forest, together with a three-panel neural-network training-history figure. Open [`demonstrations/parkinsons_demo.ipynb`](demonstrations/parkinsons_demo.ipynb) from the repository root and run all cells.
+The notebook produces parameter-performance plots for KNN, the decision tree, and the random forest, together with a three-panel neural-network training-history figure. Open [`parkinsons_demo.ipynb`](parkinsons_demo.ipynb) from the repository root and run all cells.
 
 ## Project layout
 
 ```text
 algorithms/              algorithm implementations
-demonstrations/          runnable Jupyter demonstrations
+parkinsons_demo.ipynb     runnable Jupyter demonstration
 data/                    demonstration datasets and fixed splits
 figures/                 generated plots
 results/                 generated metrics and training histories

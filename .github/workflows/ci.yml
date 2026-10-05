@@ -21,16 +21,16 @@ jobs:
         run: python -m pip install -r requirements-dev.txt
 
       - name: Ruff lint
-        run: ruff check algorithms demonstrations tests
+        run: ruff check algorithms tests
 
       - name: Ruff format check
-        run: ruff format --check algorithms demonstrations tests
+        run: ruff format --check algorithms tests
 
       - name: Type check
-        run: mypy demonstrations tests --ignore-missing-imports
+        run: mypy tests --ignore-missing-imports
 
       - name: Validate notebooks
-        run: python -c "import json; json.load(open('demonstrations/parkinsons_demo.ipynb'))"
+        run: python -c "import json; json.load(open('parkinsons_demo.ipynb'))"
 
       - name: Run tests
         run: pytest -q

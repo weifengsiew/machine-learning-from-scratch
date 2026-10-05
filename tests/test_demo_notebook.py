@@ -5,7 +5,7 @@ import pandas as pd
 
 
 def test_parkinsons_notebook_is_valid_json():
-    notebook_path = Path("demonstrations/parkinsons_demo.ipynb")
+    notebook_path = Path("parkinsons_demo.ipynb")
     notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
     assert notebook["nbformat"] == 4
     assert notebook["cells"]
