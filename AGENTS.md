@@ -4,7 +4,7 @@
 - **Keep changes minimal:** implement the smallest change that satisfies the agreed behavior.
 - **Work incrementally:** follow [Implement–Test–Iterate](docs/guides/implement-test-iterate.md) for algorithm changes and bug fixes.
 - **Stay focused:** do not refactor unrelated code or add dependencies without a clear reason.
-- **Preserve the source material boundary:** the original `HW1`–`HW4` coursework remains outside this repository; the maintained public package is under `src/ml_from_scratch/`.
+- **Preserve exact source copies:** `algorithms/HW1` through `algorithms/HW4` are verbatim copies of the corresponding homework `src` directories. Do not rewrite, rename, reformat, or silently modernize those files.
 
 ## Definition of done
 
@@ -20,9 +20,7 @@ If a check fails because of pre-existing code or an unavailable local tool, do n
 
 ## Repository structure
 
-- `src/ml_from_scratch/` contains the maintained algorithm implementations.
-- `tests/` contains focused behavior tests.
-- `examples/` contains small runnable examples.
+- `algorithms/HW1/` through `algorithms/HW4/` contain the exact extracted homework source files.
 - `docs/guides/` contains coding, testing, tooling, and CI guidance.
 - `README.md` is the public project overview.
 
@@ -38,8 +36,6 @@ See the detailed project guides:
 
 ## Algorithm-specific expectations
 
-- Keep `fit()` and `predict()` behavior explicit and consistent across models.
-- Validate invalid hyperparameters at construction or fit time.
-- Use NumPy operations where they clarify the algorithm, but keep important algorithmic steps readable.
-- Make randomized behavior reproducible through an explicit seed or random generator.
+- Preserve each homework’s original interfaces and imports.
+- Make any new wrapper, example, or documentation clearly separate from the exact source copies.
 - Do not replace a from-scratch implementation with a scikit-learn estimator.
