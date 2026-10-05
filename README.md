@@ -79,7 +79,9 @@ This transforms `z` into an output `a` between 0 and 1, which is passed to the n
 activation, stacking layers would still amount to a single linear transformation.
 
 The network’s inductive bias is flexible: it assumes useful patterns can be learned by combining information from many features across layers, rather than relying on 
-explicit threshold rules or local neighborhoods. More hidden layers allow more successive transformations and can help represent complex patterns, but can also make 
+explicit threshold rules or local neighborhoods. 
+
+More hidden layers allow more successive transformations and can help represent complex patterns, but can also make 
 training harder and increase the risk of overfitting. The network’s behavior also depends on its width, initialization, optimization, and regularization. Comparing 
 training and test performance over time helps show whether the learned patterns generalize or the network is beginning to overfit.
 
