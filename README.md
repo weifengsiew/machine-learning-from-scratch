@@ -89,17 +89,20 @@ The repository small Parkinson’s dataset for a quick demo. Run all cells in pa
 decision tree, random forest, and neural network on the same train/test split. The notebook saves parameter-performance plots and a three-panel
 neural-network training-history figure to results/parkinsons/ and figures/parkinsons/. The data is in data/parkinsons_train.csv and data/parkinsons_test.csv.
 
+For a text classification demo, open naive_bayes_demo.ipynb⁠￼. It shows how reviews are tokenized and represented as bag-of-words vectors, how Multinomial 
+Naive Bayes uses class priors and class-conditional word probabilities, and how additive smoothing works. It also compares performance across alpha values, 
+which control the strength of smoothing.
 
 ## Project layout
 
 ```text
-algorithms/              algorithm implementations
-parkinsons_demo.ipynb     numeric tabular-model demonstration
-naive_bayes_demo.ipynb    text-classification demonstration
-data/                    demonstration datasets and fixed splits
-figures/                 generated plots
-results/                 generated metrics and training histories
-docs/guides/             setup, coding, testing, tooling, and CI guides
+algorithms/              from-scratch algorithm implementations
+parkinsons_demo.ipynb    KNN, decision tree, random forest, neural network demonstration
+naive_bayes_demo.ipynb   naive bayes demonstration
+data/                    datasets and fixed train/test splits
+figures/                 generated plots from demonstration
+results/                 generated metrics and training histories from demonstration
+docs/guides/             setup, coding best practices, testing, tooling, and CI guides
 tests/                   automated tests
 ```
 
