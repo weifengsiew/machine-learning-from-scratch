@@ -19,6 +19,7 @@ The implementations do not call scikit-learn model classes. scikit-learn is used
 src/ml_from_scratch/     reusable algorithm implementations
 tests/                   focused behavior tests
 examples/                small runnable examples
+docs/guides/             setup, coding, testing, and CI guides
 pyproject.toml           package metadata and dependencies
 ```
 
@@ -30,6 +31,8 @@ source .venv/bin/activate
 python -m pip install -e ".[dev]"
 pytest
 ```
+
+See [`docs/guides/`](docs/guides/) for the project’s development and contribution guides.
 
 ## Quick example
 
