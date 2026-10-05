@@ -1,6 +1,9 @@
 # Machine Learning From Scratch
 
-This repository is a compact, educational implementation of several machine-learning algorithms. The code is intended to make the main modeling ideas visible: how each algorithm represents a decision, what assumptions it makes about data, and how those assumptions affect its behavior.
+This repository contains from-scratch implementations of several machine-learning algorithms. 
+It is intended for educational purposes, to make clear the ideas underlying these algorithms: 
+How each algorithm represents a decision, what assumptions it makes about the data, and how 
+those assumptions shape its behavior.
 
 ## Algorithms and inductive bias
 
