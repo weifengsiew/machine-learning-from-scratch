@@ -85,12 +85,10 @@ training and test performance over time helps show whether the learned patterns 
 
 ## Demonstration
 
-The repository includes a small, deterministic Parkinson’s dataset for quick demos. Run all cells in parkinsons_demo.ipynb from the repository root to compare KNN, 
-decision tree, random forest, and neural network on the same train/test split. The notebook saves parameter-performance plots and a three-panel neural-network training-history 
-figure to results/parkinsons/ and figures/parkinsons/. The data is in data/parkinsons_train.csv and data/parkinsons_test.csv.
+The repository small Parkinson’s dataset for a quick demo. Run all cells in parkinsons_demo.ipynb from the repository root to compare KNN, 
+decision tree, random forest, and neural network on the same train/test split. The notebook saves parameter-performance plots and a three-panel
+neural-network training-history figure to results/parkinsons/ and figures/parkinsons/. The data is in data/parkinsons_train.csv and data/parkinsons_test.csv.
 
-For a text-classification demo, open naive_bayes_demo.ipynb⁠￼. It uses a compact set of labeled music reviews to demonstrate Multinomial Naive Bayes, including tokenization,
-bag-of-words probabilities, class priors, additive smoothing, and an alpha performance sweep.
 
 ## Project layout
 
