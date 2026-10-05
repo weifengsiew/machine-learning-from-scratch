@@ -7,7 +7,8 @@ those assumptions shape its behavior.
 
 ## Algorithms and inductive bias
 
-An algorithm's **inductive bias** is the set of assumptions it uses to generalize beyond the examples it has seen. The algorithms in this repository make different assumptions, so comparing them is useful even when they are trained on the same data.
+An algorithm's **inductive bias** is the set of assumptions it uses to generalize beyond the examples it has seen. 
+In this repository, we will compare the inductive biases of several algorithms.
 
 ### K-nearest neighbors
 
