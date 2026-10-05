@@ -60,6 +60,10 @@ P(urgent ∩ meeting | work) ≈ P(urgent | work) × P(meeting | work)
 The words may actually be related, but this simplifying assumption makes the model fast and easy to interpret, and it can work well for text classification. 
 It is less suitable for continuous-valued measurements, which are not naturally represented as counts.
 
+The alpha parameter controls additive smoothing. It adds a small pseudo-count to each word in each class, so a word absent from the training data for a class still gets a 
+nonzero probability. A larger alpha smooths the probabilities more, making word frequencies less different across classes; if it is too large, useful class-specific
+ word patterns may be weakened.
+
 ### Neural network
 
 A feed-forward neural network makes predictions by passing inputs through layers of learned transformations and nonlinear activation functions. 
