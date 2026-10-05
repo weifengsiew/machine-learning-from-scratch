@@ -110,14 +110,15 @@ tests/                   automated tests
 
 ## Setup
 
-Install the project dependencies, including development and testing tools, with:
+From the repository root, install the project dependencies, including development and testing tools:
 
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-See [`docs/guides/`](docs/guides/) for development, testing, tooling, and contribution guidance.
+For guidance on development, testing, tools, and contributions, see [`docs/guides/`](docs/guides/).
 
 ## Continuous integration
 
-GitHub Actions runs the project checks on pushes and pull requests. The workflow checks formatting and linting, runs type checks, validates the notebook file, and runs the automated tests.
+On every push and pull request, GitHub Actions checks formatting and linting, runs type checks, 
+validates the notebook, and runs the automated tests.
