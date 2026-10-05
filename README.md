@@ -1,30 +1,27 @@
 # Machine Learning From Scratch
 
-Exact copies of the machine-learning source code developed across HW1–HW4. The original filenames and source structure are preserved so the implementations remain attributable to the coursework.
+Machine-learning algorithms developed across HW1–HW4, with the improved Decision Tree, Random Forest, and Neural Network versions from `ML_Algorithm_Compare` selected as the current implementations.
 
 ## Included algorithms
 
-- **HW1:** K-nearest neighbors and categorical decision trees
-- **HW2:** Multinomial Naive Bayes for text classification
-- **HW3:** numeric/categorical decision trees and random forests
-- **HW4:** feed-forward neural networks with backpropagation
+- **KNN:** original HW1 implementation
+- **Decision Tree:** improved implementation with configurable maximum depth
+- **Multinomial Naive Bayes:** original HW2 implementation
+- **Random Forest:** improved implementation with configurable maximum depth
+- **Neural Network:** improved implementation with multiclass labels and metrics
 
-The `algorithms/HW1`–`algorithms/HW4` files are copied verbatim from the original homework folders. Enhanced versions from `ML_Algorithm_Compare` are kept separately under `algorithms/improved/`.
+Decision Tree, Random Forest, and Neural Network are copied from `ML_Algorithm_Compare/src/shared/algorithms/`. KNN and Multinomial Naive Bayes are copied from their original homework implementations.
 
 ## Project layout
 
 ```text
-algorithms/HW1/          exact copy of HW1/src
-algorithms/HW2/          exact copy of HW2/src
-algorithms/HW3/          exact copy of HW3/src
-algorithms/HW4/          exact copy of HW4/src
-algorithms/improved/     enhanced decision tree, random forest, and neural network
+algorithms/              one current implementation per algorithm
 docs/guides/             setup, coding, testing, tooling, and CI guides
 ```
 
 ## Setup
 
-Each homework retains its own original requirements and execution workflow in the source coursework folder. This repository is an exact source extraction; consult the corresponding original `HW1`–`HW4` README and requirements file when running an experiment.
+The algorithm files retain their original coursework interfaces. Consult the original homework requirements and `ML_Algorithm_Compare/requirements.txt` when running experiments.
 
 See [`docs/guides/`](docs/guides/) for the project’s development and contribution guides.
 

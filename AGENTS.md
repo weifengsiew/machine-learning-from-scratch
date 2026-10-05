@@ -4,8 +4,7 @@
 - **Keep changes minimal:** implement the smallest change that satisfies the agreed behavior.
 - **Work incrementally:** follow [Implement–Test–Iterate](docs/guides/implement-test-iterate.md) for algorithm changes and bug fixes.
 - **Stay focused:** do not refactor unrelated code or add dependencies without a clear reason.
-- **Preserve exact source copies:** `algorithms/HW1` through `algorithms/HW4` are verbatim copies of the corresponding homework `src` directories. Do not rewrite, rename, reformat, or silently modernize those files.
-- **Separate improvements:** enhanced implementations belong under `algorithms/improved/` and should retain their improved behavior and source provenance.
+- **Keep one current implementation:** `algorithms/` contains the selected implementation for each algorithm. Do not add duplicate version folders.
 
 ## Definition of done
 
@@ -21,8 +20,7 @@ If a check fails because of pre-existing code or an unavailable local tool, do n
 
 ## Repository structure
 
-- `algorithms/HW1/` through `algorithms/HW4/` contain the exact extracted homework source files.
-- `algorithms/improved/` contains enhanced Decision Tree, Random Forest, and Neural Network implementations from `ML_Algorithm_Compare`.
+- `algorithms/` contains KNN, Decision Tree, Multinomial Naive Bayes, Random Forest, Neural Network, and supporting printer code.
 - `docs/guides/` contains coding, testing, tooling, and CI guidance.
 - `README.md` is the public project overview.
 
@@ -38,6 +36,6 @@ See the detailed project guides:
 
 ## Algorithm-specific expectations
 
-- Preserve each homework’s original interfaces and imports.
-- Make any new wrapper, example, or documentation clearly separate from the exact source copies.
+- Preserve the selected algorithm interfaces and document meaningful changes from the homework versions.
+- Keep one authoritative implementation per algorithm.
 - Do not replace a from-scratch implementation with a scikit-learn estimator.
